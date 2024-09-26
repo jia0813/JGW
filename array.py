@@ -1,25 +1,23 @@
-import csv
-
-def create_array_file():
-    array_data = ["Jia", "Gilang", "Winda"]
-    with open("array.txt", "w") as file:
-        file.write("\n".join(array_data) + "\n")
-    print("File array.txt berhasil dibuat.")
-
-def array_to_csv(input_filename, output_filename):
+def read_array_from_file(file_name):
     try:
-        with open(input_filename, 'r') as file:
-            array_data = [line.strip() for line in file.readlines()]
-
-        with open(output_filename, 'w', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow(array_data)
-        print(f"File {input_filename} berhasil diubah menjadi {output_filename}")
+        with open(file_name, 'r') as file:
+            data = file.read().strip()  # Membersihkan whitespace
+            array = data.split(",")  # Pisahkan data berdasarkan koma
+            array = [item.strip() for item in array]  # Hapus spasi berlebih
+            return array
     except FileNotFoundError:
-        print(f"File {input_filename} tidak ditemukan.")
-    except Exception as e:
-        print(f"Gagal mengubah file: {e}")
+        print(f"File {file_name} tidak ditemukan.")
+        return None
+
+def main():
+    file_name = "array.txt"  # Nama file yang ingin dibaca
+    array_data = read_array_from_file(file_name)  # Baca data dari file
+
+    if array_data is not None:
+        print("Data array yang dibaca dari file:")
+        print(array_data)  # Menampilkan data array yang sudah dibaca
+    else:
+        print("Tidak ada data yang bisa dibaca dari file.")
 
 if __name__ == "__main__":
-    create_array_file()  # Buat file array.txt
-    array_to_csv("array.txt", "array.csv")  # Ubah array.txt menjadi array.csv
+    main()
