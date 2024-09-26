@@ -1,7 +1,4 @@
-import csv
-
 def read_array_from_file(file_name):
-    """Membaca file array dan mengonversi isinya menjadi list."""
     try:
         with open(file_name, 'r') as file:
             data = file.read().strip()  # Membersihkan whitespace
@@ -12,56 +9,60 @@ def read_array_from_file(file_name):
         print(f"File {file_name} tidak ditemukan.")
         return None
 
-def read_dictionary_file(file_name):
-    """Membaca file dictionary dan mengonversi isinya menjadi dictionary."""
+def read_dictionary_from_file(file_name):
     try:
         with open(file_name, 'r') as file:
-            # Membaca setiap baris dan menghapus whitespace
-            data = [line.strip() for line in file.readlines() if line.strip()]
-
-            # Membuat dictionary dengan key otomatis
-            dictionary = {f"Nama{i + 1}": name for i, name in enumerate(data)}
+            data = [line.strip() for line in file.readlines()]  # Membaca setiap baris dan membersihkan whitespace
+            
+            # Membuat dictionary berdasarkan format 'key => value'
+            dictionary = {}
+            for line in data:
+                items = line.split('=>')
+                if len(items) >= 2:
+                    key = items[0].strip()
+                    value = items[1].strip()
+                    dictionary[key] = value
             return dictionary
     except FileNotFoundError:
         print(f"File {file_name} tidak ditemukan.")
         return None
 
-def dictionary_to_csv(dictionary, output_filename):
-    """Mengonversi dictionary ke format CSV dan menyimpannya ke file."""
+def read_file(file_name):
     try:
-        with open(output_filename, 'w', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=dictionary.keys())
-            writer.writeheader()
-            writer.writerow(dictionary)
-
-        print(f"File dictionary berhasil diubah menjadi {output_filename}")
-    except Exception as e:
-        print(f"Gagal mengubah file ke CSV: {e}")
+        with open(file_name, 'r') as file:
+            data = file.read()
+        return data
+    except FileNotFoundError:
+        return None
 
 def main():
-    # Membaca data dari file array
-    array_file = "array.txt"  # Nama file array
-    array_data = read_array_from_file(array_file)  # Baca data dari file
-
-    if array_data is not None:
-        print("Data array yang dibaca dari file:")
-        print(array_data)  # Menampilkan data array yang sudah dibaca
-    else:
-        print("Tidak ada data yang bisa dibaca dari file array.")
-
-    # Membaca data dari file dictionary
-    dictionary_file = "dictionary.txt"  # Nama file dictionary
-    dictionary_data = read_dictionary_file(dictionary_file)  # Baca data dari file
-
-    if dictionary_data is not None:
-        print("Data dictionary yang dibaca dari file:")
-        print(dictionary_data)  # Menampilkan data dictionary yang sudah dibaca
+    while True:
+        nama_file = input("Masukkan nama file txt/csv: ")
+        isi_file = read_file(nama_file)
         
-        # Mengonversi dictionary ke CSV
-        output_file = "dictionary.csv"
-        dictionary_to_csv(dictionary_data, output_file)
-    else:
-        print("Tidak ada data yang bisa dibaca dari file dictionary.")
+        print("\nIsi file yang dibaca:")
+        print(isi_file)  # Menampilkan isi file
 
-if _name_ == "_main_":
+        if isi_file is not None:
+            if ',' in isi_file:  # Cek format array
+                array = read_array_from_file(nama_file)
+                if array is not None:
+                    print("\nData yang dibaca adalah Array:")
+                    print(array)
+            elif '=>' in isi_file:  # Cek format dictionary
+                dictionary_data = read_dictionary_from_file(nama_file)
+                if dictionary_data is not None:
+                    print("\nData yang dibaca adalah Dictionary:")
+                    print(dictionary_data)
+            else:
+                print("Format tidak dikenali.")
+        else:
+            print(f"File '{nama_file}' tidak ditemukan. Coba lagi.\n")
+        
+        pilihan = input("\nApakah Anda ingin memasukkan file lain? (y/n): ").lower()
+        if pilihan != 'y':
+            print("Terima kasih telah menggunakan aplikasi!")
+            break
+
+if __name__ == "__main__":
     main()
