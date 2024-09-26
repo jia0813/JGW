@@ -1,1 +1,2 @@
-Nama1:Jia;Nama2:Gilang;Nama3:Winda
+apel => pisang
+jeruk => mangga
