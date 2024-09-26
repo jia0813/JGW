@@ -12,56 +12,29 @@ def read_array_from_file(file_name):
         print(f"File {file_name} tidak ditemukan.")
         return None
 
-def read_dictionary_file(file_name):
-    """Membaca file dictionary dan mengonversi isinya menjadi dictionary."""
-    try:
-        with open(file_name, 'r') as file:
-            # Membaca setiap baris dan menghapus whitespace
-            data = [line.strip() for line in file.readlines() if line.strip()]
-
-            # Membuat dictionary dengan key otomatis
-            dictionary = {f"Nama{i + 1}": name for i, name in enumerate(data)}
-            return dictionary
-    except FileNotFoundError:
-        print(f"File {file_name} tidak ditemukan.")
-        return None
-
-def dictionary_to_csv(dictionary, output_filename):
-    """Mengonversi dictionary ke format CSV dan menyimpannya ke file."""
+def array_to_csv(array, output_filename):
+    """Mengonversi array ke format CSV dan menyimpannya ke file."""
     try:
         with open(output_filename, 'w', newline='') as csvfile:
-            writer = csv.DictWriter(csvfile, fieldnames=dictionary.keys())
-            writer.writeheader()
-            writer.writerow(dictionary)
-
-        print(f"File dictionary berhasil diubah menjadi {output_filename}")
+            writer = csv.writer(csvfile)
+            writer.writerow(array)  # Menulis data array ke file CSV
+        print(f"Data array berhasil disimpan ke {output_filename}")
     except Exception as e:
-        print(f"Gagal mengubah file ke CSV: {e}")
+        print(f"Gagal menyimpan data ke CSV: {e}")
 
 def main():
-    # Membaca data dari file array
-    array_file = "array.txt"  # Nama file array
-    array_data = read_array_from_file(array_file)  # Baca data dari file
+    file_name = "array.txt"  # Nama file yang ingin dibaca
+    array_data = read_array_from_file(file_name)  # Baca data dari file
 
     if array_data is not None:
         print("Data array yang dibaca dari file:")
         print(array_data)  # Menampilkan data array yang sudah dibaca
+
+        # Menyimpan data array ke file CSV
+        output_file = "array.csv"
+        array_to_csv(array_data, output_file)
     else:
-        print("Tidak ada data yang bisa dibaca dari file array.")
+        print("Tidak ada data yang bisa dibaca dari file.")
 
-    # Membaca data dari file dictionary
-    dictionary_file = "dictionary.txt"  # Nama file dictionary
-    dictionary_data = read_dictionary_file(dictionary_file)  # Baca data dari file
-
-    if dictionary_data is not None:
-        print("Data dictionary yang dibaca dari file:")
-        print(dictionary_data)  # Menampilkan data dictionary yang sudah dibaca
-        
-        # Mengonversi dictionary ke CSV
-        output_file = "dictionary.csv"
-        dictionary_to_csv(dictionary_data, output_file)
-    else:
-        print("Tidak ada data yang bisa dibaca dari file dictionary.")
-
-if _name_ == "main":
-    main()
+if __name__ == "__main__":
+    main()
