@@ -1,4 +1,4 @@
-mport csv
+import csv
 
 def read_dictionary_file(file_name):
     """Membaca file dictionary dan mengonversi isinya menjadi dictionary."""
