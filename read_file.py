@@ -1,5 +1,5 @@
 from fungsiarray import read_array_from_file
-from dictonary import read_dictionary_from_file
+from dictionary import read_dictionary_from_file
 
 def read_file(file_name):
     try:
