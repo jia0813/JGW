@@ -1,5 +1,5 @@
 1: Hand Gun
-2: Snipper
-3: Kniff
+2: Sniper
+3: Knife
 4: Basoka
-5: Ar
+5: Assault riffle
