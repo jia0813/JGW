@@ -1,0 +1,5 @@
+1: Pistol; Hitam
+2: Sniper; Pink
+3: Pisau; Putih
+4: Basoka; Kuning
+5: Senapan; Hijau

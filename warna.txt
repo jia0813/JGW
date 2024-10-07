@@ -1,0 +1,5 @@
+1: Hitam
+2: Pink
+3: Putih
+4: Kuning
+5: Hijau
