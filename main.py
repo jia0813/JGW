@@ -1,51 +1,46 @@
-from lihatdata import baca_file_lihatdata
-from nama import baca_file_nama
-from jenis import baca_file_jenis
-from warna import baca_file_warna
-
 def baca_file_lihatdata(file_name):
-    data_senjata = {}
+    data = {}
     try:
         with open(file_name, 'r') as file:
             lines = file.readlines()
             for i, line in enumerate(lines, 1):
-                data_senjata[i] = line.strip()  # Menghapus newline dan spasi ekstra
+                data[i] = line.strip()  # Menghapus newline dan spasi ekstra
     except FileNotFoundError:
         print(f"File {file_name} tidak ditemukan.")
-    return data_senjata
+    return data
 
 def baca_file_nama(file_name):
-    data_nama = {}
+    data = {}
     try:
         with open(file_name, 'r') as file:
             lines = file.readlines()
             for i, line in enumerate(lines, 1):
-                data_nama[i] = line.strip()  # Menghapus newline dan spasi ekstra
+                data[i] = line.strip()  # Menghapus newline dan spasi ekstra
     except FileNotFoundError:
         print(f"File {file_name} tidak ditemukan.")
-    return data_nama
+    return data
 
 def baca_file_jenis(file_name):
-    data_jenis = {}
+    data = {}
     try:
         with open(file_name, 'r') as file:
             lines = file.readlines()
             for i, line in enumerate(lines, 1):
-                data_jenis[i] = line.strip()  # Menghapus newline dan spasi ekstra
+                data[i] = line.strip()  # Menghapus newline dan spasi ekstra
     except FileNotFoundError:
         print(f"File {file_name} tidak ditemukan.")
-    return data_jenis
+    return data
 
 def baca_file_warna(file_name):
-    data_warna = {}
+    data = {}
     try:
         with open(file_name, 'r') as file:
             lines = file.readlines()
             for i, line in enumerate(lines, 1):
-                data_warna[i] = line.strip()  # Menghapus newline dan spasi ekstra
+                data[i] = line.strip()  # Menghapus newline dan spasi ekstra
     except FileNotFoundError:
         print(f"File {file_name} tidak ditemukan.")
-    return data_warna
+    return data
 
 def tambah_data(data_dict, value):
     # Menambahkan data ke dalam dictionary
@@ -84,6 +79,12 @@ def buat_senjata():
     # Output
     print(f"Anda telah memilih nama: {nama}, jenis: {jenis}, warna: {warna}")
 
+# Membaca data dari file
+data_lihatdata = baca_file_lihatdata('lihatdata.txt')
+data_nama = baca_file_nama('nama.txt')
+data_jenis = baca_file_jenis('jenis.txt')
+data_warna = baca_file_warna('warna.txt')
+
 while True:
     print("\nPilih opsi:")
     print("1. Lihat data senjata")
@@ -102,7 +103,7 @@ while True:
     pilihan = input("Masukkan pilihan (1-12): ")
 
     if pilihan == '1':
-        print("ID_Data Senjata:", data_senjata)
+        print("ID_Data Senjata:", data_lihatdata)
     elif pilihan == '2':
         print("ID_Nama Senjata:", data_nama)
     elif pilihan == '3':
