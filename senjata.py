@@ -9,7 +9,7 @@ class WeaponApp:
         self.root.configure(bg="#404B6B")
 
         self.weapon_data = [
-            ("GLOK", "PISTOL", "HITAM"),
+            ("GLOCK", "PISTOL", "HITAM"),
             ("AWP", "SNIPER", "PINK"),
             ("KARAMBIT", "PISAU", "PUTIH"),
             ("RUDAL", "BASOKA", "KUNING"),
@@ -17,7 +17,7 @@ class WeaponApp:
         ]
         self.weapon_types = ["PISTOL", "SNIPER", "PISAU", "BASOKA", "SENAPAN"]
         self.weapon_colors = ["HITAM", "PINK", "PUTIH", "KUNING", "HIJAU"]
-        self.weapon_names = ["GLOK", "AWP", "KARAMBIT", "RUDAL", "KARABIN"]
+        self.weapon_names = ["GLOCK", "AWP", "KARAMBIT", "RUDAL", "KARABIN"]
 
         self.selected_weapon = None
         self.selected_color = None
