@@ -201,6 +201,24 @@ class WeaponApp:
         self.shoot_count += 1
         self.shoot_label.config(text=f"Tembakan: {self.shoot_count}")
 
+    def save_nama_data(namea, file_name="name.txt"):
+        """Simpan data nama ke file."""
+        with open(file_name, 'a') as file:
+            file.write(f"{namea}\n")
+        print(f"Nama senjata {namea} berhasil disimpan ke {file_name}")
+    
+    def save_weapon_type(weapon, file_name="jenis.txt"):
+        """Simpan data jenis senjata ke file."""
+        with open(file_name, 'a') as file:
+            file.write(f"{weapon}\n")
+        print(f"Jenis senjata {weapon} berhasil disimpan ke {file_name}")
+    
+    def save_weapon_color(color, file_name="warna.txt"):
+        """Simpan data warna senjata ke file."""
+        with open(file_name, 'a') as file:
+            file.write(f"{color}\n")
+        print(f"Warna senjata {color} berhasil disimpan ke {file_name}")
+
     def show_results(self):
         weapon_ids = self.read_weapon_ids()
         weapon_id = None
