@@ -183,18 +183,27 @@ class WeaponApp:
         new_weapon = simpledialog.askstring("Tambah Jenis Senjata", "Ketik jenis senjata yang anda inginkan:")
         if new_weapon:
             self.weapon_types.append(new_weapon)
+            with open("jenis.txt", 'a') as file:
+                file.write(f"{new_weapon}\n")
+            print(f"Jenis senjata {new_weapon} berhasil ditambahkan ke jenis.txt")
         self.page_6()
 
     def add_color(self):
         new_color = simpledialog.askstring("Tambah Warna Senjata", "Ketik warna senjata yang anda inginkan:")
         if new_color:
             self.weapon_colors.append(new_color)
+            with open("warna.txt", 'a') as file:
+                file.write(f"{new_color}\n")
+            print(f"Warna senjata {new_color} berhasil ditambahkan ke warna.txt")
         self.page_7()
 
     def add_name(self):
         new_name = simpledialog.askstring("Tambah Nama Senjata", "Ketik nama senjata yang anda inginkan:")
         if new_name:
             self.weapon_names.append(new_name)
+            with open("nama.txt", 'a') as file:
+                file.write(f"{new_name}\n")
+            print(f"Nama senjata {new_name} berhasil ditambahkan ke nama.txt")
         self.page_8()
 
     def shoot(self):

@@ -2,4 +2,4 @@
 2: Sniper
 3: Pisau
 4: Basoka
-5: Senapan
+5: Senapanassault riffle
