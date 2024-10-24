@@ -12,6 +12,8 @@ class JGWApp(tk.Tk):
         self.font_style_large = ("ThaleahFat", 16)  # Increased font size
         self.font_style_medium = ("ThaleahFat", 14)
         self.transaction_history = []
+        self.weapon_types = []
+        self.weapon_colors = []
         self.load_data()
         self.weapon_types = ["1: Pistol", "2: Sniper", "3: Pisau", "4: Basoka", "5: Senapan"]
         self.weapon_colors = ["1: Hitam", "2: Pink", "3: Putih", "4: Kuning", "5: Hijau"]
@@ -176,9 +178,6 @@ class JGWApp(tk.Tk):
         tk.Button(self, text="Hasil", command=self.page7, bg="#FEAE35", font=self.font_style_large).pack(pady=5)
         tk.Button(self, text="Kembali", command=self.page5, bg="#FEAE35", font=self.font_style_large).pack(pady=10)
 
-        # Button for sorting (can implement sorting logic here)
-        tk.Button(self, text="Sortir", command=self.sortir_transaksi, bg="#FEAE35", font=self.font_style_large).pack(pady=5)
-
     def tembak(self):
         self.shot_count += 1
         self.shot_label.config(text=f"Peluru Ditembak: {self.shot_count}")
@@ -228,33 +227,51 @@ class JGWApp(tk.Tk):
         jenis_baru = simpledialog.askstring("Tambah Jenis Senjata", "Masukkan jenis senjata:")
         if jenis_baru:
             self.weapon_types.append(jenis_baru)
+            self.save_data()
             self.page3()
 
     def tambah_warna(self):
         warna_baru = simpledialog.askstring("Tambah Warna Senjata", "Masukkan warna senjata:")
         if warna_baru:
             self.weapon_colors.append(warna_baru)
+            self.save_data()
             self.page4()
 
     def hapus_jenis(self, jenis):
         self.weapon_types.remove(jenis)
+        self.save_data
         self.page3()
 
     def hapus_warna(self, warna):
         self.weapon_colors.remove(warna)
+        self.save_data()
         self.page4()
 
     def save_data(self):
-        with open("transaction_history.json", "w") as file:
-            json.dump(self.transaction_history, file)
+        data = {
+            "transaction_history": self.transaction_history,
+            "weapon_types": self.weapon_types,
+            "weapon_colors": self.weapon_colors
+        }
+        with open("data.json", "w") as file:
+            json.dump(data, file)
 
     def load_data(self):
         try:
-            with open("transaction_history.json", "r") as file:
-                self.transaction_history = json.load(file)
+            with open("data.json", "r") as file:
+                data = json.load(file)
+                self.transaction_history = data.get("transaction_history", [])
+                self.weapon_types = data.get("weapon_types", [])
+                self.weapon_colors = data.get("weapon_colors", [])
         except FileNotFoundError:
             self.transaction_history = []
-
+            self.weapon_types = []
+            self.weapon_colors = []
+        except json.JSONDecodeError:
+            print("Error decoding file JSON.")
+            self.transaction_history = []
+            self.weapon_types = []
+            self.weapon_colors = []
 
 if __name__ == "__main__":
     app = JGWApp()
