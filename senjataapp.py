@@ -9,21 +9,23 @@ class WeaponApp:
         self.root.configure(bg="#404B6B")
 
         self.weapon_data = [
-            ("GLOCK", "PISTOL", "HITAM"),
+            ("GLOK", "PISTOL", "HITAM"),
             ("AWP", "SNIPER", "PINK"),
             ("KARAMBIT", "PISAU", "PUTIH"),
             ("RUDAL", "BASOKA", "KUNING"),
             ("KARABIN", "SENAPAN", "HIJAU")
         ]
+
         self.weapon_types = ["PISTOL", "SNIPER", "PISAU", "BASOKA", "SENAPAN"]
         self.weapon_colors = ["HITAM", "PINK", "PUTIH", "KUNING", "HIJAU"]
-        self.weapon_names = ["GLOCK", "AWP", "KARAMBIT", "RUDAL", "KARABIN"]
+        self.weapon_names = ["GLOK", "AWP", "KARAMBIT", "RUDAL", "KARABIN"]
 
         self.selected_weapon = None
         self.selected_color = None
         self.selected_name = None
         self.transaction_data = []
 
+        # Start with page 1
         self.page_1()
 
     def clear_widgets(self):
@@ -51,15 +53,15 @@ class WeaponApp:
     def page_1(self):
         self.clear_widgets()
         scrollable_frame = self.create_scrollable_frame()
-        tk.Label(scrollable_frame, text="Selamat datang di Dunia JGW!", font=("ThaleahFat", 70), bg="#404B6B", fg="white").pack(pady=200)
-        tk.Button(scrollable_frame, text="Mulai", command=self.page_2, bg="#FEAE35", font=("ThaleahFat", 50)).pack(pady=20)
+        tk.Label(scrollable_frame, text="Selamat datang di Dunia JGW!", font=("ThaleahFat", 60), bg="#404B6B", fg="white").pack(pady=200)
+        tk.Button(scrollable_frame, text="Mulai", command=self.page_2, bg="#FEAE35", font=("ThaleahFat", 40)).pack(pady=20)
 
     def page_2(self):
         self.clear_widgets()
         scrollable_frame = self.create_scrollable_frame()
-        tk.Label(scrollable_frame, text="Ayo bertarung! Pilih senjatamu!", font=("ThaleahFat", 70), bg="#404B6B", fg="white").pack(pady=150)
-        tk.Button(scrollable_frame, text="Data Senjata", command=self.page_3, bg="#FEAE35", font=("ThaleahFat", 50)).pack(pady=20)
-        tk.Button(scrollable_frame, text="Buat Senjata", command=self.page_5, bg="#FEAE35", font=("ThaleahFat", 50)).pack(pady=20)
+        tk.Label(scrollable_frame, text="Ayo bertarung! Pilih senjatamu!", font=("ThaleahFat", 50), bg="#404B6B", fg="white").pack(pady=150)
+        tk.Button(scrollable_frame, text="Data Senjata", command=self.page_3, bg="#FEAE35", font=("ThaleahFat", 40)).pack(pady=20)
+        tk.Button(scrollable_frame, text="Buat Senjata", command=self.page_5, bg="#FEAE35", font=("ThaleahFat", 40)).pack(pady=20)
 
     def page_3(self):
         self.clear_widgets()
@@ -80,13 +82,109 @@ class WeaponApp:
         self.selected_name = namea
         self.selected_color = color
         self.selected_weapon = weapon
-        tk.Label(self.root, text=f"Anda telah membuat", font=("ThaleahFat", 30), bg="#404B6B", fg="white").pack(pady=10)
-        tk.Label(self.root, text=f"Nama: {namea}", font=("ThaleahFat", 30), bg="#404B6B", fg="white").pack(pady=10)
-        tk.Label(self.root, text=f"Jenis: {weapon}", font=("ThaleahFat", 30), bg="#404B6B", fg="white").pack(pady=10)
-        tk.Label(self.root, text=f"Warna: {color}", font=("ThaleahFat", 30), bg="#404B6B", fg="white").pack(pady=10)
-        tk.Button(self.root, text="Ayo Latihan Bertarung", command=self.page_training, bg="#FEAE35", font=("ThaleahFat", 30)).pack(pady=10)
-        tk.Button(self.root, text="Kembali", command=self.page_2, bg="#FEAE35", font=("ThaleahFat", 30)).pack(pady=10)
 
+        scrollable_frame = self.create_scrollable_frame()
+
+        self.weapon_info_frame = tk.Frame(scrollable_frame, bg="#404B6B")
+        self.weapon_info_frame.pack(pady=10)
+        
+        tk.Label(self.weapon_info_frame, text=f"Anda telah membuat", font=("ThaleahFat", 22), bg="#404B6B", fg="white").pack(pady=10)
+        tk.Label(self.weapon_info_frame, text=f"Nama: {namea}", font=("ThaleahFat", 22), bg="#404B6B", fg="white").pack(pady=10)
+        tk.Label(self.weapon_info_frame, text=f"Jenis: {weapon}", font=("ThaleahFat", 22), bg="#404B6B", fg="white").pack(pady=10)
+        tk.Label(self.weapon_info_frame, text=f"Warna: {color}", font=("ThaleahFat", 22), bg="#404B6B", fg="white").pack(pady=10)
+        tk.Button(self.weapon_info_frame, text="Ayo Latihan Bertarung", command=self.page_training, bg="#FEAE35", font=("ThaleahFat", 22)).pack(pady=10)
+        tk.Button(self.weapon_info_frame, text="Kembali", command=self.page_2, bg="#FEAE35", font=("ThaleahFat", 22)).pack(pady=10)
+
+        # Adding transaction history buttons
+        self.display_history_buttons(scrollable_frame)
+
+    def display_history_buttons(self, parent_frame):
+        if not hasattr(self, 'sort_frame') or not self.sort_frame.winfo_exists():
+            self.sort_frame = tk.Frame(parent_frame, bg="#404B6B")
+            self.sort_frame.pack(pady=20)
+
+            tk.Button(self.sort_frame, text="3 Latihan Terakhir", command=lambda: self.display_history(parent_frame, "last_three"), bg="#FEAE35", font=("ThaleahFat", 15)).pack(side="left", padx=10)
+            tk.Button(self.sort_frame, text="Senjata yang Paling Banyak Digunakan", command=lambda: self.display_history(parent_frame, "most_used"), bg="#FEAE35", font=("ThaleahFat", 15)).pack(side="left", padx=10)
+            tk.Button(self.sort_frame, text="Senjata yang Belum Pernah Digunakan", command=lambda: self.display_history(parent_frame, "never_used"), bg="#FEAE35", font=("ThaleahFat", 15)).pack(side="left", padx=10)
+
+    def display_history(self, parent_frame, filter_type):
+        # Clear any previous displayed history but keep the sorting buttons and weapon info
+        for widget in parent_frame.winfo_children():
+            if widget != self.sort_frame and widget != self.weapon_info_frame:
+                widget.destroy()
+
+        # Read transaction data from transactions.txt and filter based on the selected type
+        try:
+            with open('transactions.txt', 'r') as file:
+                lines = file.readlines()
+
+                if filter_type == "last_three":
+                    filtered_transactions = lines[-3:]
+                    self.display_transaction_table(parent_frame, filtered_transactions)
+                elif filter_type == "most_used":
+                    weapon_count = {}
+                    for line in lines:
+                        transaction_data = line.strip().split(", ")
+                        weapon_id = transaction_data[1]
+                        weapon_count[weapon_id] = weapon_count.get(weapon_id, 0) + 1
+                    if weapon_count:
+                        most_used_weapon_id = max(weapon_count, key=weapon_count.get)
+                        weapon_name = self.read_weapon_ids().get(most_used_weapon_id, "Unknown")
+                        tk.Label(parent_frame, text=f"Senjata yang Paling Banyak Digunakan", font=("ThaleahFat", 22), bg="#404B6B", fg="white").pack(pady=10)
+                        tk.Label(parent_frame, text=f"{most_used_weapon_id}: {weapon_name}", font=("ThaleahFat", 22), bg="#404B6B", fg="white").pack(pady=5)
+                    else:
+                        tk.Label(parent_frame, text="Tidak ada data transaksi.", font=("ThaleahFat", 22), bg="#FEAE35", fg="black").pack(pady=20)
+                elif filter_type == "never_used":
+                    used_weapon_ids = set()
+                    for line in lines:
+                        transaction_data = line.strip().split(", ")
+                        used_weapon_ids.add(transaction_data[1])
+                    all_weapon_ids = set(self.read_weapon_ids().keys())
+                    never_used_weapon_ids = all_weapon_ids - used_weapon_ids
+
+                    if never_used_weapon_ids:
+                        tk.Label(parent_frame, text="Senjata yang Belum Pernah Digunakan", font=("ThaleahFat", 30), bg="#404B6B", fg="white").pack(pady=10)
+                        for weapon_id in never_used_weapon_ids:
+                            weapon_name = self.read_weapon_ids().get(weapon_id, "Unknown")
+                            tk.Label(parent_frame, text=f"{weapon_id}: {weapon_name}", font=("ThaleahFat", 25), bg="#404B6B", fg="white").pack(pady=5)
+                    else:
+                        tk.Label(parent_frame, text="Semua senjata telah digunakan.", font=("ThaleahFat", 30), bg="#FEAE35", fg="black").pack(pady=20)
+                else:
+                    tk.Label(parent_frame, text="Tidak ada data transaksi.", font=("ThaleahFat", 30), bg="#FEAE35", fg="black").pack(pady=20)
+        except FileNotFoundError:
+            tk.Label(parent_frame, text="File transactions.txt not found.", font=("ThaleahFat", 20), bg="#404B6B", fg="white").pack(pady=10)
+
+    def display_transaction_table(self, parent_frame, transactions):
+        table_frame = tk.Frame(parent_frame, bg="#404B6B")
+        table_frame.pack(pady=10)
+
+        # Table headers
+        tk.Label(table_frame, text="ID TRANSAKSI", font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=0, column=0, padx=5, pady=5)
+        tk.Label(table_frame, text="ID JENIS", font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=0, column=1, padx=5, pady=5)
+        tk.Label(table_frame, text="PELAURU DIGUNAKAN", font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=25).grid(row=0, column=2, padx=5, pady=5)
+        tk.Label(table_frame, text="WAKTU", font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=0, column=3, padx=5, pady=5)
+
+        # Display filtered transactions
+        for i, line in enumerate(transactions):
+            transaction_data = line.strip().split(", ")
+            tk.Label(table_frame, text=transaction_data[0], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=0, padx=5, pady=5)
+            tk.Label(table_frame, text=transaction_data[1], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=1, padx=5, pady=5)
+            tk.Label(table_frame, text=transaction_data[2], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=25).grid(row=i + 1, column=2, padx=5, pady=5)
+            tk.Label(table_frame, text=transaction_data[3], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=3, padx=5, pady=5)
+
+    def read_weapon_ids(self):
+        weapon_ids = {}
+        try:
+            with open("jenis.txt", 'r') as file:
+                for line in file:
+                    key, value = line.strip().split(': ', 1)
+                    weapon_ids[key] = value
+        except FileNotFoundError:
+            print("File jenis.txt not found.")
+        return weapon_ids
+
+    # Existing functions omitted for brevity
+    
     def page_5(self):
         self.clear_widgets()
         tk.Button(self.root, text="Nama Senjata", command=self.page_8, bg="#FEAE35", font=("ThaleahFat", 30)).pack(pady=30)
@@ -183,50 +281,23 @@ class WeaponApp:
         new_weapon = simpledialog.askstring("Tambah Jenis Senjata", "Ketik jenis senjata yang anda inginkan:")
         if new_weapon:
             self.weapon_types.append(new_weapon)
-            with open("jenis.txt", 'a') as file:
-                file.write(f"{new_weapon}\n")
-            print(f"Jenis senjata {new_weapon} berhasil ditambahkan ke jenis.txt")
         self.page_6()
 
     def add_color(self):
         new_color = simpledialog.askstring("Tambah Warna Senjata", "Ketik warna senjata yang anda inginkan:")
         if new_color:
             self.weapon_colors.append(new_color)
-            with open("warna.txt", 'a') as file:
-                file.write(f"{new_color}\n")
-            print(f"Warna senjata {new_color} berhasil ditambahkan ke warna.txt")
         self.page_7()
 
     def add_name(self):
         new_name = simpledialog.askstring("Tambah Nama Senjata", "Ketik nama senjata yang anda inginkan:")
         if new_name:
             self.weapon_names.append(new_name)
-            with open("nama.txt", 'a') as file:
-                file.write(f"{new_name}\n")
-            print(f"Nama senjata {new_name} berhasil ditambahkan ke nama.txt")
         self.page_8()
 
     def shoot(self):
         self.shoot_count += 1
         self.shoot_label.config(text=f"Tembakan: {self.shoot_count}")
-
-    def save_nama_data(namea, file_name="name.txt"):
-        """Simpan data nama ke file."""
-        with open(file_name, 'a') as file:
-            file.write(f"{namea}\n")
-        print(f"Nama senjata {namea} berhasil disimpan ke {file_name}")
-    
-    def save_weapon_type(weapon, file_name="jenis.txt"):
-        """Simpan data jenis senjata ke file."""
-        with open(file_name, 'a') as file:
-            file.write(f"{weapon}\n")
-        print(f"Jenis senjata {weapon} berhasil disimpan ke {file_name}")
-    
-    def save_weapon_color(color, file_name="warna.txt"):
-        """Simpan data warna senjata ke file."""
-        with open(file_name, 'a') as file:
-            file.write(f"{color}\n")
-        print(f"Warna senjata {color} berhasil disimpan ke {file_name}")
 
     def show_results(self):
         weapon_ids = self.read_weapon_ids()
@@ -251,13 +322,17 @@ class WeaponApp:
 
         self.transaction_data.append(transaction)
 
+        # Append transaction to file
         with open('transactions.txt', 'a') as file:
             file.write(f"{transaction['id_transaksi']}, {transaction['id_jenis']}, {transaction['jumlah_tembakan']}, {transaction['waktu_kegiatan']}\n")
 
+        # Create a scrollable frame
         self.clear_widgets()
-        tk.Label(self.root, text="HASIL LATIHAN", font=("ThaleahFat", 50), bg="#404B6B", fg="white").pack(pady=20)
+        scrollable_frame = self.create_scrollable_frame()
 
-        table_frame = tk.Frame(self.root, bg="#404B6B")
+        tk.Label(scrollable_frame, text="HASIL LATIHAN", font=("ThaleahFat", 50), bg="#404B6B", fg="white").pack(pady=20)
+
+        table_frame = tk.Frame(scrollable_frame, bg="#404B6B")
         table_frame.pack(pady=20)
 
         tk.Label(table_frame, text="ID TRANSAKSI", font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=0, column=0, padx=5, pady=5)
@@ -265,13 +340,20 @@ class WeaponApp:
         tk.Label(table_frame, text="PELAURU YANG DIGUNAKAN", font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=25).grid(row=0, column=2, padx=5, pady=5)
         tk.Label(table_frame, text="WAKTU KEGIATAN", font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=0, column=3, padx=5, pady=5)
 
-        for i, trans in enumerate(self.transaction_data):
-            tk.Label(table_frame, text=trans['id_transaksi'], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=0, padx=5, pady=5)
-            tk.Label(table_frame, text=trans['id_jenis'], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=1, padx=5, pady=5)
-            tk.Label(table_frame, text=trans['jumlah_tembakan'], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=25).grid(row=i + 1, column=2, padx=5, pady=5)
-            tk.Label(table_frame, text=trans['waktu_kegiatan'], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=3, padx=5, pady=5)
+        try:
+            # Read the transaction file and display all entries
+            with open('transactions.txt', 'r') as file:
+                for i, line in enumerate(file.readlines()):
+                    transaction_data = line.strip().split(", ")
+                    tk.Label(table_frame, text=transaction_data[0], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=0, padx=5, pady=5)
+                    tk.Label(table_frame, text=transaction_data[1], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=1, padx=5, pady=5)
+                    tk.Label(table_frame, text=transaction_data[2], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=25).grid(row=i + 1, column=2, padx=5, pady=5)
+                    tk.Label(table_frame, text=transaction_data[3], font=("ThaleahFat", 20), bg="#FEAE35", fg="black", width=15).grid(row=i + 1, column=3, padx=5, pady=5)
 
-        button_frame = tk.Frame(self.root, bg="#404B6B")
+        except FileNotFoundError:
+            tk.Label(self.root, text="File transactions.txt not found.", font=("ThaleahFat", 20), bg="#404B6B", fg="white").pack(pady=10)
+
+        button_frame = tk.Frame(scrollable_frame, bg="#404B6B")
         button_frame.pack(pady=20)
 
         tk.Button(button_frame, text="KEMBALI", command=self.page_training, bg="#FEAE35", font=("ThaleahFat", 30)).pack(side="left", padx=20)

@@ -1,0 +1,33 @@
+def start_auto_save(self):
+def start_auto_save(self):
+    """Memulai proses auto-save secara berkala."""
+    self.auto_save()
+    # Menjalankan auto-save setiap interval yang ditentukan dalam detik
+    self.root.after(self.auto_save_interval * 1000, self.start_auto_save)
+
+def auto_save(self):
+    """Menyimpan state saat ini ke file."""
+    try:
+        with open('autosave.txt', 'w') as file:
+            file.write("Data Senjata:\n")
+            for weapon in self.weapon_data:
+                file.write(f"{weapon}\n")  # Menulis data senjata ke file
+            file.write("\nData Transaksi:\n")
+            for transaction in self.transaction_data:
+                file.write(f"{transaction}\n")  # Menulis data transaksi ke file
+        print("Auto-save berhasil.")  # Pesan sukses auto-save
+    except Exception as e:
+        print(f"Error saat auto-save: {e}")  # Menangani jika ada error saat auto-save
+
+def add_weapon_type(self):
+    new_weapon = simpledialog.askstring("Tambah Jenis Senjata", "Ketik jenis senjata yang anda inginkan:")
+    if new_weapon:
+        # Menambahkan senjata baru ke data senjata dengan nilai default "UNKNOWN"
+        self.weapon_data.append((new_weapon, "UNKNOWN", "UNKNOWN"))
+    self.auto_save()  # Melakukan auto-save setelah menambah senjata
+    self.page_6()  # Pindah ke halaman 6 untuk memperbarui tampilan
+
+def delete_weapon(self, index):
+    del self.weapon_data[index]  # Menghapus senjata berdasarkan indeks
+    self.auto_save()  # Melakukan auto-save setelah menghapus senjata
+    self.page_3()  # Pindah ke halaman 3 untuk memperbarui tampilan
