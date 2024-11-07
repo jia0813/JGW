@@ -1,0 +1,9 @@
+1: Glok; Pistol; Hitam
+2: AWP; Sniper; Pink
+3: Karambit; Pisau; Putih
+4: Rudal; Basoka; Kuning
+5: Karabin;Senapan; Hijau
+6: asd;Pistol;Hitam
+7: mbom;Pistol;Kuning
+8: asdzxc;Pistol;Pink
+9: kolo;Pistol;Hitam
