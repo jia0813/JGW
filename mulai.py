@@ -5,8 +5,8 @@ from datetime import datetime
 from tkinter import messagebox
 
 class JGWApp(tk.Tk):
-    def _init_(self):
-        super()._init_()
+    def __init__(self):
+        super().__init__()
         self.geometry("600x400")
         self.configure(bg="#404B6B")
         self.title("JGW Weapon Selection")
@@ -243,8 +243,10 @@ class JGWApp(tk.Tk):
         tk.Button(self, text="Kembali", command=self.page2, bg="#FEAE35", font=self.font_style_medium).pack(pady=10)
 
     def select_weapon_type(self, jenis):
+        # Step 3: Store the selected weapon type
         self.selected_weapon_type = jenis
-        self.page4()
+        # Move to the next step, switch to the Warna Senjata tab
+        self.select_tab("Warna Senjata")
 
     def page4(self):
         for widget in self.winfo_children():
@@ -262,8 +264,44 @@ class JGWApp(tk.Tk):
         tk.Button(self, text="Kembali", command=self.page3, bg="#FEAE35", font=self.font_style_medium).pack(pady=10)
 
     def select_weapon_color(self, warna):
+        # Step 4: Store the selected color
         self.selected_weapon_color = warna
-        self.page5()
+        
+        # Step 5: Now save the weapon to senjata.txt
+        self.save_new_weapon_data()
+        # Step 6: Automatically switch to Data Senjata tab
+        self.page2()
+    def save_new_weapon_data(self):
+        # Generate new weapon entry format
+        new_id = len(self.weapon_data_list) + 1
+        print(self.selected_weapon_type)
+        print(self.selected_weapon_color)
+        weapon_entry = f"{new_id}: {self.weapon_name};{self.selected_weapon_type.split(": ", 1)[-1]};{self.selected_weapon_color.split(": ", 1)[-1]}"
+
+        # Add new weapon data to list and save to file
+        self.weapon_data_list.append(weapon_entry)
+        self.save_weapon_data()
+    def select_tab(self, tab_name):
+        # Find the Notebook widget within the window's children
+        notebook = None
+        self.load_weapon_data()
+        for widget in self.winfo_children():
+            if isinstance(widget, ttk.Notebook):
+                notebook = widget
+                self.load_weapon_data()
+                break
+        
+        # If we found the Notebook, proceed to select the tab
+        if notebook:
+            self.load_weapon_data()
+            for index in range(notebook.index("end")):
+                self.load_weapon_data()
+                if notebook.tab(index, "text") == tab_name:
+                    self.load_weapon_data()
+                    notebook.select(index)
+                    break
+        else:
+            tk.messagebox.showerror("Error", "Notebook widget not found.")
 
     def page5(self):
         for widget in self.winfo_children():
@@ -464,47 +502,22 @@ class JGWApp(tk.Tk):
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File jenis.txt not found.")
     def tambah_data_senjata(self):
-    # Prompt for weapon name
-        weapon_name = simpledialog.askstring("Tambah Data Senjata", "Masukkan nama senjata:")
-        if not weapon_name:
+        # Step 1: Prompt the user for the weapon name
+        self.weapon_name = simpledialog.askstring("Tambah Data Senjata", "Masukkan nama senjata:")
+        if not self.weapon_name:
             return  # Exit if no name is provided
-
-        # Select weapon type
-        weapon_type = simpledialog.askstring("Tambah Data Senjata", "Pilih jenis senjata:\n" + "\n".join(self.weapon_types))
-        if weapon_type not in self.weapon_types:
-            messagebox.showerror("Error", "Jenis senjata tidak valid.")
-            return
-
-        # Extract the actual weapon type name (without the ID and colon)
-        weapon_type_name = weapon_type.split(": ", 1)[1] if ": " in weapon_type else weapon_type
-
-        # Select weapon color
-        weapon_color = simpledialog.askstring("Tambah Data Senjata", "Pilih warna senjata:\n" + "\n".join(self.weapon_colors))
-        if weapon_color not in self.weapon_colors:
-            messagebox.showerror("Error", "Warna senjata tidak valid.")
-            return
-
-        # Extract the actual color name (without the ID and colon)
-        weapon_color_name = weapon_color.split(": ", 1)[1] if ": " in weapon_color else weapon_color
-
-        # Generate new weapon ID based on the number of entries
-        new_id = len(self.weapon_data_list) + 1
-        new_weapon_entry = f"{new_id}: {weapon_name};{weapon_type_name};{weapon_color_name}"
-
-        # Add new weapon data to list and save to file
-        self.weapon_data_list.append(new_weapon_entry)
-        self.save_weapon_data()
-
-        # Refresh the page to display the new weapon entry
-        self.page2()
+        
+        # Step 2: Automatically switch to the Jenis Senjata tab for the user to select the type
+        self.select_tab("Jenis Senjata")
     def save_weapon_data(self):
-    # Save the weapon data to senjata.txt
+        # Save the weapon data to senjata.txt
         try:
             with open("senjata.txt", "w") as file:
                 for item in self.weapon_data_list:
                     file.write(f"{item}\n")
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File senjata.txt not found.")
+
     def select_weapon(self, weapon):
         # Extract the weapon details
         weapon_parts = weapon.split(";")
@@ -590,7 +603,7 @@ class JGWApp(tk.Tk):
             else:  # option == "all_history"
                 sorted_history = self.transaction_history
 
-            # Pass sorted history and the sorting option to display_sorted_history
+            # Pass sorted history and the sorting option to `display_sorted_history`
             display_sorted_history(sorted_history, option)
 
         # Sort option buttons
@@ -636,6 +649,6 @@ class JGWApp(tk.Tk):
             tk.Label(transaction_frame, text=waktu, font=self.font_style_medium, bg="#FEAE35", fg="black", width=20).grid(row=0, column=2, padx=5, pady=5)
             tk.Button(transaction_frame, text="HAPUS", command=lambda t=transaction: self.delete_transaction(t), bg="#FEAE35", font=self.font_style_medium, width=10).grid(row=0, column=3, padx=5, pady=5)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app = JGWApp()
     app.mainloop()
