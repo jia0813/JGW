@@ -5,8 +5,8 @@ from datetime import datetime
 from tkinter import messagebox
 
 class JGWApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
+    def _init_(self):
+        super()._init_()
         self.geometry("600x400")
         self.configure(bg="#404B6B")
         self.title("JGW Weapon Selection")
@@ -172,7 +172,7 @@ class JGWApp(tk.Tk):
         self.weapon_id_map.pop(weapon_id, None)
         try:
             # Write updated list back to senjata.txt
-            with open("C:/python/JGW-main(2)/JGW-main/senjata.txt", "w") as file:
+            with open("senjata.txt", "w") as file:
                 for item in self.weapon_data_list:
                     file.write(f"{item}\n")
         except FileNotFoundError:
@@ -371,7 +371,7 @@ class JGWApp(tk.Tk):
     def save_jenis_data(self):
         # Save the updated list to jenis.txt
         try:
-            with open("C:/python/JGW-main(2)/JGW-main/jenis.txt", "w") as file:
+            with open("jenis.txt", "w") as file:
                 for jenis in self.weapon_types:
                     file.write(f"{jenis}\n")
         except FileNotFoundError:
@@ -401,7 +401,7 @@ class JGWApp(tk.Tk):
         # Load weapon colors from warna.txt
         self.weapon_colors = []
         try:
-            with open("C:/python/JGW-main(2)/JGW-main/warna.txt", "r") as file:
+            with open("warna.txt", "r") as file:
                 for line in file:
                     self.weapon_colors.append(line.strip())
         except FileNotFoundError:
@@ -410,7 +410,7 @@ class JGWApp(tk.Tk):
     def save_warna_data(self):
         # Save the updated list to warna.txt
         try:
-            with open("C:/python/JGW-main(2)/JGW-main/warna.txt", "w") as file:
+            with open("warna.txt", "w") as file:
                 for warna in self.weapon_colors:
                     file.write(f"{warna}\n")
         except FileNotFoundError:
@@ -423,14 +423,14 @@ class JGWApp(tk.Tk):
             "weapon_types": self.weapon_names,
             "weapon_colors": self.weapon_colors
         }
-        with open("C:/python/JGW-main(2)/JGW-main/data.json", "w") as file:
+        with open("data.json", "w") as file:
             json.dump(data, file)
             
     def load_weapon_data(self):
         self.weapon_id_map = {}
         self.weapon_data_list = []
         try:
-            with open("C:/python/JGW-main(2)/JGW-main/senjata.txt", "r") as file:
+            with open("senjata.txt", "r") as file:
                 for line in file:
                     weapon_id, weapon_info = line.strip().split(": ")
                     self.weapon_id_map[weapon_id] = weapon_info  # Store ID and info mapping
@@ -439,7 +439,7 @@ class JGWApp(tk.Tk):
             tk.messagebox.showerror("Error", "File senjata.txt not found.")
     def load_data(self):
         try:
-            with open("C:/python/JGW-main(2)/JGW-main/data.json", "r") as file:
+            with open("data.json", "r") as file:
                 data = json.load(file)
                 self.transaction_history = data.get("transaction_history", [])
                 self.weapon_types = data.get("weapon_types", [])
@@ -458,7 +458,7 @@ class JGWApp(tk.Tk):
         # Load weapon types from jenis.txt
         self.weapon_types = []
         try:
-            with open("C:/python/JGW-main(2)/JGW-main/jenis.txt", "r") as file:
+            with open("jenis.txt", "r") as file:
                 for line in file:
                     self.weapon_types.append(line.strip())
         except FileNotFoundError:
@@ -500,7 +500,7 @@ class JGWApp(tk.Tk):
     def save_weapon_data(self):
     # Save the weapon data to senjata.txt
         try:
-            with open("C:/python/JGW-main(2)/JGW-main/senjata.txt", "w") as file:
+            with open("senjata.txt", "w") as file:
                 for item in self.weapon_data_list:
                     file.write(f"{item}\n")
         except FileNotFoundError:
@@ -590,7 +590,7 @@ class JGWApp(tk.Tk):
             else:  # option == "all_history"
                 sorted_history = self.transaction_history
 
-            # Pass sorted history and the sorting option to `display_sorted_history`
+            # Pass sorted history and the sorting option to display_sorted_history
             display_sorted_history(sorted_history, option)
 
         # Sort option buttons
@@ -636,6 +636,6 @@ class JGWApp(tk.Tk):
             tk.Label(transaction_frame, text=waktu, font=self.font_style_medium, bg="#FEAE35", fg="black", width=20).grid(row=0, column=2, padx=5, pady=5)
             tk.Button(transaction_frame, text="HAPUS", command=lambda t=transaction: self.delete_transaction(t), bg="#FEAE35", font=self.font_style_medium, width=10).grid(row=0, column=3, padx=5, pady=5)
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app = JGWApp()
     app.mainloop()
