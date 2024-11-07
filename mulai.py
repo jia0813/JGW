@@ -10,8 +10,8 @@ class JGWApp(tk.Tk):
         self.geometry("600x400")
         self.configure(bg="#404B6B")
         self.title("JGW Weapon Selection")
-        self.font_style_large = ("ThaleahFat", 16)  # Increased font size
-        self.font_style_medium = ("ThaleahFat", 14)
+        self.font_style_large = ("ThaleahFat", 10)  # Increased font size
+        self.font_style_medium = ("ThaleahFat", 8)
         self.transaction_history = []
         self.weapon_types = []
         self.weapon_colors = []
@@ -79,6 +79,11 @@ class JGWApp(tk.Tk):
 
         # "Tambah Data Senjata" button
         tk.Button(frame1, text="TAMBAH DATA SENJATA", command=self.tambah_data_senjata, bg="#FEAE35", font=self.font_style_medium).pack(pady=20)
+        self.data_senjata_label = tk.Label(frame1, text=f"NAMA SENJATA: {self.weapon_name}", font=self.font_style_medium, bg="#404B6B", fg="white")
+        self.data_senjata_label.pack(pady=10)
+        tk.Button(frame1, text="EDIT", command=self.edit_weapon_name, bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
+        tk.Button(frame1, text="LANJUT", command=lambda: self.select_tab(notebook, "Jenis Senjata"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
+        
         # Add data from jenis.txt to the Jenis Senjata tab
         self.load_jenis_data()
         for index, jenis in enumerate(self.weapon_types, start=1):
@@ -89,7 +94,7 @@ class JGWApp(tk.Tk):
             tk.Label(jenis_frame, text=f"{jenis}", font=self.font_style_medium, bg="#404B6B", fg="white").pack(side="left", padx=10)
 
             # "Pilih" and "Hapus" buttons for each jenis
-            tk.Button(jenis_frame, text="PILIH", command=lambda j=jenis: self.select_weapon_type(j), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
+            tk.Button(jenis_frame, text="PILIH", command=lambda j=jenis: self.select_weapon_type(j, notebook), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
             tk.Button(jenis_frame, text="HAPUS", command=lambda j=jenis: self.hapus_jenis(j), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
 
         # "Tambah Jenis Senjata" button
@@ -242,11 +247,10 @@ class JGWApp(tk.Tk):
         tk.Button(self, text="Tambah Jenis Senjata", command=self.tambah_jenis, bg="#FEAE35", font=self.font_style_medium).pack(pady=10)
         tk.Button(self, text="Kembali", command=self.page2, bg="#FEAE35", font=self.font_style_medium).pack(pady=10)
 
-    def select_weapon_type(self, jenis):
-        # Step 3: Store the selected weapon type
-        self.selected_weapon_type = jenis
-        # Move to the next step, switch to the Warna Senjata tab
-        self.select_tab("Warna Senjata")
+    def select_weapon_type(self, jenis, notebook):
+        # Store the selected weapon type and switch to the Warna Senjata tab
+        self.selected_weapon_type = jenis.split(": ", 1)[-1]  # Extract the type name
+        self.select_tab(notebook, "Warna Senjata")
 
     def page4(self):
         for widget in self.winfo_children():
@@ -264,31 +268,25 @@ class JGWApp(tk.Tk):
         tk.Button(self, text="Kembali", command=self.page3, bg="#FEAE35", font=self.font_style_medium).pack(pady=10)
 
     def select_weapon_color(self, warna):
-        # Step 4: Store the selected color
-        self.selected_weapon_color = warna
-        
-        # Step 5: Now save the weapon to senjata.txt
+        # Store the selected weapon color and save the weapon data
+        self.selected_weapon_color = warna.split(": ", 1)[-1]  # Extract the color name
         self.save_new_weapon_data()
-        # Step 6: Automatically switch to Data Senjata tab
-        self.page2()
     def save_new_weapon_data(self):
-        # Generate new weapon entry format
+        # Format the weapon entry and save it
         new_id = len(self.weapon_data_list) + 1
-        print(self.selected_weapon_type)
-        print(self.selected_weapon_color)
-        weapon_entry = f"{new_id}: {self.weapon_name};{self.selected_weapon_type.split(": ", 1)[-1]};{self.selected_weapon_color.split(": ", 1)[-1]}"
-
-        # Add new weapon data to list and save to file
+        weapon_entry = f"{new_id}: {self.weapon_name};{self.selected_weapon_type};{self.selected_weapon_color}"
+        
+        # Append to list and save to file
         self.weapon_data_list.append(weapon_entry)
         self.save_weapon_data()
-    def select_tab(self, tab_name):
-        # Find the Notebook widget within the window's children
-        notebook = None
-        self.load_weapon_data()
-        for widget in self.winfo_children():
-            if isinstance(widget, ttk.Notebook):
-                notebook = widget
-                self.load_weapon_data()
+        messagebox.showinfo("Success", f"Senjata '{self.weapon_name}' berhasil disimpan.")
+        self.page2()
+    
+    def select_tab(self, notebook, tab_name):
+        # Switch to the specified tab
+        for i in range(notebook.index("end")):
+            if notebook.tab(i, "text") == tab_name:
+                notebook.select(i)
                 break
         
         # If we found the Notebook, proceed to select the tab
@@ -507,10 +505,16 @@ class JGWApp(tk.Tk):
         if not self.weapon_name:
             return  # Exit if no name is provided
         
-        # Step 2: Automatically switch to the Jenis Senjata tab for the user to select the type
-        self.select_tab("Jenis Senjata")
+        # Update the label with the new weapon name
+        self.data_senjata_label.config(text=f"NAMA SENJATA: {self.weapon_name}")
+    def edit_weapon_name(self):
+        # Step 2: Show popup to edit the weapon name
+        new_name = simpledialog.askstring("Edit Nama Senjata", "Ubah nama senjata:", initialvalue=self.weapon_name)
+        if new_name:
+            self.weapon_name = new_name
+            self.data_senjata_label.config(text=f"NAMA SENJATA: {self.weapon_name}")
     def save_weapon_data(self):
-        # Save the weapon data to senjata.txt
+        # Save weapon data to senjata.txt
         try:
             with open("senjata.txt", "w") as file:
                 for item in self.weapon_data_list:
