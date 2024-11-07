@@ -61,7 +61,7 @@ class JGWApp(tk.Tk):
         notebook.add(frame2, text="Jenis Senjata")
         notebook.add(frame3, text="Warna Senjata")
         notebook.add(frame4, text="Hasil Latihan")
-
+        
         # Display weapon data from self.weapon_data_list in Data Senjata tab
         for item in self.weapon_data_list:
             item_frame = tk.Frame(frame1, bg="#404B6B")
@@ -79,10 +79,14 @@ class JGWApp(tk.Tk):
 
         # "Tambah Data Senjata" button
         tk.Button(frame1, text="TAMBAH DATA SENJATA", command=self.tambah_data_senjata, bg="#FEAE35", font=self.font_style_medium).pack(pady=20)
-        self.data_senjata_label = tk.Label(frame1, text=f"NAMA SENJATA: {self.weapon_name}", font=self.font_style_medium, bg="#404B6B", fg="white")
-        self.data_senjata_label.pack(pady=10)
-        tk.Button(frame1, text="EDIT", command=self.edit_weapon_name, bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
-        tk.Button(frame1, text="LANJUT", command=lambda: self.select_tab(notebook, "Jenis Senjata"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
+        control_frame = tk.Frame(frame1, bg="#404B6B")
+        control_frame.pack(pady=20)
+        edit_button = tk.Button(control_frame, text="EDIT", command=self.edit_weapon_name, bg="#FEAE35", font=self.font_style_medium)
+        edit_button.pack(side="left", padx=5)
+        self.data_senjata_label = tk.Label(control_frame, text=f"NAMA SENJATA: {self.weapon_name}", font=self.font_style_medium, bg="#404B6B", fg="white")
+        self.data_senjata_label.pack(side="left", padx=5)
+        lanjut_button = tk.Button(control_frame, text="LANJUT", command=lambda: self.select_tab(notebook, "Jenis Senjata"), bg="#FEAE35", font=self.font_style_medium)
+        lanjut_button.pack(side="left", padx=5)
         
         # Add data from jenis.txt to the Jenis Senjata tab
         self.load_jenis_data()
