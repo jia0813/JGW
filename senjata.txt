@@ -7,3 +7,4 @@
 7: mbom;Pistol;Kuning
 8: asdzxc;Pistol;Pink
 9: kolo;Pistol;Hitam
+10: tes lagi;Sniper;Pink
