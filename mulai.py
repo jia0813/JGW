@@ -2,20 +2,25 @@ import tkinter as tk
 from tkinter import ttk, simpledialog
 import json
 from datetime import datetime
-from tkinter import messagebox
+from tkinter import ttk, simpledialog, messagebox
+from tkcalendar import DateEntry
+import datetime
 
 class JGWApp(tk.Tk):
-    def __init__(self):
-        super().__init__()
+    def _init_(self):
+        super()._init_()
         self.geometry("600x400")
         self.configure(bg="#404B6B")
         self.title("JGW Weapon Selection")
         self.font_style_large = ("ThaleahFat", 10)  # Increased font size
         self.font_style_medium = ("ThaleahFat", 8)
         self.transaction_history = []
+        self.jenis_map = {}   # Mapping for jenis senjata
+        self.warna_map = {}   # Mapping for warna senjata
         self.weapon_types = []
         self.weapon_colors = []
         self.load_data()
+        
         self.weapon_types = ["1: Pistol", "2: Sniper", "3: Pisau", "4: Basoka", "5: Senapan"]
         self.weapon_colors = ["1: Hitam", "2: Pink", "3: Putih", "4: Kuning", "5: Hijau"]
         self.load_weapon_data()
@@ -72,21 +77,15 @@ class JGWApp(tk.Tk):
 
             # Display weapon details
             tk.Label(item_frame, text=item, font=self.font_style_medium, bg="#404B6B", fg="white").pack(side="left", padx=10)
-
-            # "Pilih" and "Hapus" buttons
             tk.Button(item_frame, text="PILIH", command=lambda i=item: self.select_weapon(i), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
+            # "Pilih" and "Hapus" buttons
             tk.Button(item_frame, text="HAPUS", command=lambda i=item: self.delete_weapon(i), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
 
         # "Tambah Data Senjata" button
         tk.Button(frame1, text="TAMBAH DATA SENJATA", command=self.tambah_data_senjata, bg="#FEAE35", font=self.font_style_medium).pack(pady=20)
         control_frame = tk.Frame(frame1, bg="#404B6B")
         control_frame.pack(pady=20)
-        edit_button = tk.Button(control_frame, text="EDIT", command=self.edit_weapon_name, bg="#FEAE35", font=self.font_style_medium)
-        edit_button.pack(side="left", padx=5)
-        self.data_senjata_label = tk.Label(control_frame, text=f"NAMA SENJATA: {self.weapon_name}", font=self.font_style_medium, bg="#404B6B", fg="white")
-        self.data_senjata_label.pack(side="left", padx=5)
-        lanjut_button = tk.Button(control_frame, text="LANJUT", command=lambda: self.select_tab(notebook, "Jenis Senjata"), bg="#FEAE35", font=self.font_style_medium)
-        lanjut_button.pack(side="left", padx=5)
+
         
         # Add data from jenis.txt to the Jenis Senjata tab
         self.load_jenis_data()
@@ -98,7 +97,6 @@ class JGWApp(tk.Tk):
             tk.Label(jenis_frame, text=f"{jenis}", font=self.font_style_medium, bg="#404B6B", fg="white").pack(side="left", padx=10)
 
             # "Pilih" and "Hapus" buttons for each jenis
-            tk.Button(jenis_frame, text="PILIH", command=lambda j=jenis: self.select_weapon_type(j, notebook), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
             tk.Button(jenis_frame, text="HAPUS", command=lambda j=jenis: self.hapus_jenis(j), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
 
         # "Tambah Jenis Senjata" button
@@ -106,16 +104,15 @@ class JGWApp(tk.Tk):
 
         # Add data from warna.txt to the Warna Senjata tab
         self.load_warna_data()
+
         for index, warna in enumerate(self.weapon_colors, start=1):
             warna_frame = tk.Frame(frame3, bg="#404B6B")
             warna_frame.pack(fill='x', padx=10, pady=5)
 
             # Display the index and warna
             tk.Label(warna_frame, text=f"{warna}", font=self.font_style_medium, bg="#404B6B", fg="white").pack(side="left", padx=10)
-
             # "Pilih" and "Hapus" buttons for each warna
-            tk.Button(warna_frame, text="PILIH", command=lambda w=warna: self.select_weapon_color(w), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
-            tk.Button(warna_frame, text="HAPUS", command=lambda w=warna: self.hapus_warna(w), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
+        tk.Button(warna_frame, text="HAPUS", command=lambda w=warna: self.hapus_warna(w), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
 
         # "Tambah Warna Senjata" button
         tk.Button(frame3, text="TAMBAH WARNA SENJATA", command=self.tambah_warna, bg="#FEAE35", font=self.font_style_medium).pack(pady=20)
@@ -189,17 +186,22 @@ class JGWApp(tk.Tk):
 
         # Refresh the page to show updated list
         self.page2()
-    def display_selected_weapon(self, weapon_name, weapon_type, weapon_color):
+    def display_selected_weapon(self, weapon_name, weapon_type_id, weapon_color_id):
+        # Look up the names for the type and color based on their IDs
+        weapon_type_name = self.jenis_map.get(weapon_type_id, "Unknown Type")
+        weapon_color_name = self.warna_map.get(weapon_color_id, "Unknown Color")
+
+        # Clear the current widgets
         for widget in self.winfo_children():
             widget.destroy()
 
-        # Display selected weapon details
+        # Display the weapon information
         tk.Label(self, text="KAMU TELAH MEMBUAT", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=10)
         tk.Label(self, text=f"NAMA: {weapon_name}", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=5)
-        tk.Label(self, text=f"JENIS: {weapon_type}", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=5)
-        tk.Label(self, text=f"WARNA: {weapon_color}", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=5)
+        tk.Label(self, text=f"JENIS: {weapon_type_name}", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=5)
+        tk.Label(self, text=f"WARNA: {weapon_color_name}", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=5)
 
-        # Buttons for next steps
+        # Buttons for next actions
         tk.Button(self, text="MULAI LATIHAN", command=self.page6, bg="#FEAE35", font=self.font_style_large).pack(pady=10)
         tk.Button(self, text="KEMBALI", command=self.page2, bg="#FEAE35", font=self.font_style_large).pack(pady=5)
 
@@ -276,11 +278,17 @@ class JGWApp(tk.Tk):
         self.selected_weapon_color = warna.split(": ", 1)[-1]  # Extract the color name
         self.save_new_weapon_data()
     def save_new_weapon_data(self):
-        # Format the weapon entry and save it
+        # Dapatkan nomor urut terbaru
         new_id = len(self.weapon_data_list) + 1
-        weapon_entry = f"{new_id}: {self.weapon_name};{self.selected_weapon_type};{self.selected_weapon_color}"
-        
-        # Append to list and save to file
+
+        # Dapatkan ID jenis dan warna dari weapon_type dan weapon_color
+        id_jenis = self.weapon_types.index(self.selected_weapon_type) + 1
+        id_warna = self.weapon_colors.index(self.selected_weapon_color) + 1
+
+        # Format data senjata dengan format yang diinginkan
+        weapon_entry = f"{new_id}: {self.weapon_name};{id_jenis};{id_warna}"
+
+        # Tambahkan entry ke daftar dan simpan ke file
         self.weapon_data_list.append(weapon_entry)
         self.save_weapon_data()
         messagebox.showinfo("Success", f"Senjata '{self.weapon_name}' berhasil disimpan.")
@@ -438,12 +446,12 @@ class JGWApp(tk.Tk):
             self.page2()  # Refresh page to update the display
 
     def load_warna_data(self):
-        # Load weapon colors from warna.txt
-        self.weapon_colors = []
+        # Load weapon colors from warna.txt into a dictionary
         try:
             with open("warna.txt", "r") as file:
                 for line in file:
-                    self.weapon_colors.append(line.strip())
+                    id, name = line.strip().split(": ")
+                    self.warna_map[id] = name
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File warna.txt not found.")
 
@@ -495,22 +503,55 @@ class JGWApp(tk.Tk):
             self.weapon_types = []
             self.weapon_colors = []
     def load_jenis_data(self):
-        # Load weapon types from jenis.txt
-        self.weapon_types = []
+        # Load weapon types from jenis.txt into a dictionary
         try:
             with open("jenis.txt", "r") as file:
                 for line in file:
-                    self.weapon_types.append(line.strip())
+                    id, name = line.strip().split(": ")
+                    self.jenis_map[id] = name
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File jenis.txt not found.")
     def tambah_data_senjata(self):
-        # Step 1: Prompt the user for the weapon name
-        self.weapon_name = simpledialog.askstring("Tambah Data Senjata", "Masukkan nama senjata:")
-        if not self.weapon_name:
-            return  # Exit if no name is provided
+        # Popup for weapon creation
+        popup = tk.Toplevel(self)
+        popup.geometry("300x200")
+        popup.configure(bg="#FEAE35")
+        popup.title("Buat Senjata Baru")
+
+        tk.Label(popup, text="BUAT SENJATA BARU", font=self.font_style_medium, bg="#FEAE35", fg="black").pack(pady=5)
+
+        # Weapon Name Entry
+        tk.Label(popup, text="Masukkan Nama Senjata", bg="#FEAE35").pack()
+        name_entry = tk.Entry(popup)
+        name_entry.pack()
+
+        # Weapon Type Dropdown
+        tk.Label(popup, text="Pilih Jenis Senjata", bg="#FEAE35").pack()
+        weapon_type_var = tk.StringVar(popup)
+        weapon_type_dropdown = ttk.Combobox(popup, textvariable=weapon_type_var, values=self.weapon_types, state="readonly")
+        weapon_type_dropdown.pack()
+
+        # Weapon Color Dropdown
+        tk.Label(popup, text="Pilih Warna Senjata", bg="#FEAE35").pack()
+        weapon_color_var = tk.StringVar(popup)
+        weapon_color_dropdown = ttk.Combobox(popup, textvariable=weapon_color_var, values=self.weapon_colors, state="readonly")
+        weapon_color_dropdown.pack()
+
+        # OK and Cancel Buttons
+        button_frame = tk.Frame(popup, bg="#FEAE35")
+        button_frame.pack(pady=10)
         
-        # Update the label with the new weapon name
-        self.data_senjata_label.config(text=f"NAMA SENJATA: {self.weapon_name}")
+        tk.Button(button_frame, text="OK", command=lambda: self.create_weapon(name_entry.get(), weapon_type_var.get(), weapon_color_var.get(), popup), bg="white").pack(side="left", padx=5)
+        tk.Button(button_frame, text="CANCEL", command=popup.destroy, bg="white").pack(side="left", padx=5)
+    def create_weapon(self, name, weapon_type, weapon_color, popup):
+        if not name or not weapon_type or not weapon_color:
+            messagebox.showwarning("Warning", "Lengkapi semua data senjata.")
+            return
+        popup.destroy()
+        self.weapon_name = name
+        self.selected_weapon_type = weapon_type
+        self.selected_weapon_color = weapon_color
+        self.save_new_weapon_data()
     def edit_weapon_name(self):
         # Step 2: Show popup to edit the weapon name
         new_name = simpledialog.askstring("Edit Nama Senjata", "Ubah nama senjata:", initialvalue=self.weapon_name)
@@ -539,6 +580,7 @@ class JGWApp(tk.Tk):
         # Show the selected weapon details on a new page
         self.display_selected_weapon(weapon_name, weapon_type, weapon_color)
         # Tambahkan fungsi popup untuk tombol "SORTIR"
+
     def sort_transactions(self):
         # Create a top-level window for sort options
         self.sort_popup = tk.Toplevel(self)
@@ -611,8 +653,38 @@ class JGWApp(tk.Tk):
             else:  # option == "all_history"
                 sorted_history = self.transaction_history
 
-            # Pass sorted history and the sorting option to `display_sorted_history`
+            # Pass sorted history and the sorting option to display_sorted_history
             display_sorted_history(sorted_history, option)
+
+        # Function to sort by date range
+        def sort_by_date():
+            # Create a new popup for date range selection
+            date_popup = tk.Toplevel(self.sort_popup)
+            date_popup.geometry("300x200")
+            date_popup.title("Pilih Rentang Tanggal")
+            date_popup.configure(bg="#F3E8C4")
+
+            tk.Label(date_popup, text="Pilih Tanggal Mulai:", bg="#F3E8C4").pack(pady=5)
+            start_date_entry = DateEntry(date_popup, width=12, background='darkblue', foreground='white', borderwidth=2)
+            start_date_entry.pack(pady=5)
+
+            tk.Label(date_popup, text="Pilih Tanggal Akhir:", bg="#F3E8C4").pack(pady=5)
+            end_date_entry = DateEntry(date_popup, width=12, background='darkblue', foreground='white', borderwidth=2)
+            end_date_entry.pack(pady=5)
+
+            def filter_by_date():
+                start_date = datetime.datetime.strptime(start_date_entry.get(), "%m/%d/%y")
+                end_date = datetime.datetime.strptime(end_date_entry.get(), "%m/%d/%y")
+
+                filtered_history = [
+                    transaction for transaction in self.transaction_history
+                    if start_date <= datetime.datetime.strptime(transaction["waktu"], "%Y-%m-%d %H:%M:%S") <= end_date
+                ]
+                display_sorted_history(filtered_history, "date_range")
+                date_popup.destroy()
+
+            tk.Button(date_popup, text="Terapkan", command=filter_by_date, bg="#FEAE35").pack(pady=10)
+            tk.Button(date_popup, text="Batal", command=date_popup.destroy, bg="#FEAE35").pack(pady=5)
 
         # Sort option buttons
         tk.Button(self.sort_popup, text="3 LATIHAN TERAKHIR", command=lambda: apply_sorting("last_three"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
@@ -620,11 +692,12 @@ class JGWApp(tk.Tk):
         tk.Button(self.sort_popup, text="SENJATA YANG PALING SEDIKIT DIGUNAKAN", command=lambda: apply_sorting("least_used"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
         tk.Button(self.sort_popup, text="SENJATA YANG TIDAK PERNAH DIGUNAKAN", command=lambda: apply_sorting("never_used"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
         tk.Button(self.sort_popup, text="TAMPILKAN SEMUA SEJARAH", command=lambda: apply_sorting("all_history"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
+        tk.Button(self.sort_popup, text="BERDASARKAN TANGGAL", command=sort_by_date, bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
 
-
-        # Frame untuk menampilkan hasil sortir di bawah pilihan opsi di top-level window
+        # Frame for displaying the sorted results under the options in the top-level window
         self.sorted_history_frame = tk.Frame(self.sort_popup, bg="#F3E8C4")
         self.sorted_history_frame.pack(fill="both", expand=True, padx=10, pady=10)
+
 
 
 
@@ -657,6 +730,6 @@ class JGWApp(tk.Tk):
             tk.Label(transaction_frame, text=waktu, font=self.font_style_medium, bg="#FEAE35", fg="black", width=20).grid(row=0, column=2, padx=5, pady=5)
             tk.Button(transaction_frame, text="HAPUS", command=lambda t=transaction: self.delete_transaction(t), bg="#FEAE35", font=self.font_style_medium, width=10).grid(row=0, column=3, padx=5, pady=5)
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app = JGWApp()
     app.mainloop()
