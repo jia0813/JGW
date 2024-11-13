@@ -1,5 +1,5 @@
-1: Hitam
-2: Pink
-3: Putih
-4: Kuning
-5: Hijauorange
+Hitam
+Pink
+Putih
+Kuning
+Hijau
