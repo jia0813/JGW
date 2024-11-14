@@ -7,8 +7,8 @@ from tkcalendar import DateEntry
 import datetime
 
 class JGWApp(tk.Tk):
-    def _init_(self):
-        super()._init_()
+    def __init__(self):
+        super().__init__()
         self.geometry("600x400")
         self.configure(bg="#404B6B")
         self.title("JGW Weapon Selection")
@@ -112,7 +112,7 @@ class JGWApp(tk.Tk):
             # Display the index and warna
             tk.Label(warna_frame, text=f"{warna}", font=self.font_style_medium, bg="#404B6B", fg="white").pack(side="left", padx=10)
             # "Pilih" and "Hapus" buttons for each warna
-        tk.Button(warna_frame, text="HAPUS", command=lambda w=warna: self.hapus_warna(w), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
+            tk.Button(warna_frame, text="HAPUS", command=lambda w=warna: self.hapus_warna(w), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
 
         # "Tambah Warna Senjata" button
         tk.Button(frame3, text="TAMBAH WARNA SENJATA", command=self.tambah_warna, bg="#FEAE35", font=self.font_style_medium).pack(pady=20)
@@ -374,7 +374,7 @@ class JGWApp(tk.Tk):
         # Generate transaction result
         transaction_id = len(self.transaction_history) + 1
         id_senjata = self.selected_weapon_type.split(":")[0].strip()  # Extract only the ID part from selected_weapon_type
-        current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Append transaction data to history
         transaction = {
@@ -730,6 +730,6 @@ class JGWApp(tk.Tk):
             tk.Label(transaction_frame, text=waktu, font=self.font_style_medium, bg="#FEAE35", fg="black", width=20).grid(row=0, column=2, padx=5, pady=5)
             tk.Button(transaction_frame, text="HAPUS", command=lambda t=transaction: self.delete_transaction(t), bg="#FEAE35", font=self.font_style_medium, width=10).grid(row=0, column=3, padx=5, pady=5)
 
-if _name_ == "_main_":
+if __name__ == "__main__":
     app = JGWApp()
     app.mainloop()
