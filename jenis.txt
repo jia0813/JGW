@@ -1,5 +1,6 @@
-1: Pistol
-2: Sniper
-3: Pisau
-4: Basoka
-5: Senapan
+1 => Pistol
+2 => Sniper
+3 => Pisau
+4 => Basoka
+5 => Senapan
+6 => Tes
