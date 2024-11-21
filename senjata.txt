@@ -1,5 +1,6 @@
-1: Glok;1;1
-2: AWP;2;2
-3: Karambit;3;3
-4: Rudal;4;4
-5: Senapan;5;5
+1 => Glok;1;1
+2 => AWP;2;2
+3 => Karambit;3;3
+4 => Rudal;4;4
+5 => Karabin;5;5
+6 => Tes aja;1;1
