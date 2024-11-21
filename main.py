@@ -1,92 +1,81 @@
-import os
-
-def baca_file(file_name):
-    data = {}
+# Fungsi untuk membaca dictionary dari file
+def read_dictionary_from_file(file_name):
     try:
         with open(file_name, 'r') as file:
-            lines = file.readlines()
-            for i, line in enumerate(lines, 1):
-                data[i] = line.strip()
+            data = [line.strip() for line in file.readlines()]
+            dictionary = {}
+            for line in data:
+                items = line.split('=>')
+                if len(items) >= 2:
+                    key = items[0].strip()
+                    value = items[1].strip()
+                    dictionary[key] = value
+            return dictionary
     except FileNotFoundError:
         print(f"File {file_name} tidak ditemukan.")
-    return data
+        return {}
 
-def tulis_file(file_name, data_dict):
+# Fungsi untuk menyimpan dictionary ke dalam file
+def save_to_file(file_name, data_dict):
     with open(file_name, 'w') as file:
         for key, value in data_dict.items():
-            file.write(f"{value}\n")
+            file.write(f"{key} => {value}\n")
 
+# Fungsi untuk menambah data ke dictionary dan file
 def tambah_data(data_dict, file_name, value):
-    # Cek apakah data sudah ada
-    if value.lower() in [v.lower() for v in data_dict.values()]:
-        print(f"{value} sudah ada di daftar.")
-        return data_dict
-
-    key = len(data_dict) + 1
-    data_dict[key] = value
-    tulis_file(file_name, data_dict)
-    print(f"{value} telah ditambahkan.")
+    new_key = str(len(data_dict) + 1)  # Menambahkan key baru secara otomatis
+    data_dict[new_key] = value
+    save_to_file(file_name, data_dict)
     return data_dict
 
+# Fungsi untuk menghapus data berdasarkan key
 def hapus_data(data_dict, file_name, key):
-    if key in data_dict:
-        del data_dict[key]
-        data_dict = {i+1: value for i, value in enumerate(data_dict.values())}
-        tulis_file(file_name, data_dict)
-        print(f"Data dengan key {key} telah dihapus.")
+    if str(key) in data_dict:
+        del data_dict[str(key)]
+        save_to_file(file_name, data_dict)
     else:
-        print("Key tidak ditemukan.")
+        print(f"Key {key} tidak ditemukan!")
     return data_dict
 
-def buat_senjata(data_senjata, data_nama, data_jenis, data_warna):
-    print("Daftar Nama Senjata:")
-    for key, value in data_nama.items():
-        print(f"{key}. {value}")
-    
+# Fungsi untuk membuat senjata baru
+def buat_senjata(data_senjata, data_jenis, data_warna):
+    # Menampilkan daftar jenis senjata
     print("\nDaftar Jenis Senjata:")
     for key, value in data_jenis.items():
-        print(f"{key}. {value}")
+        print(f"{key}: {value}")
     
+    # Memilih jenis senjata berdasarkan ID
+    jenis_id = input("Masukkan ID jenis senjata: ")
+
+    # Menampilkan daftar warna senjata
     print("\nDaftar Warna Senjata:")
     for key, value in data_warna.items():
-        print(f"{key}. {value}")
+        print(f"{key}: {value}")
+    
+    # Memilih warna senjata berdasarkan ID
+    warna_id = input("Masukkan ID warna senjata: ")
 
-    # Tambah nama, jenis, warna baru jika belum ada
-    nama_input = input("\nMasukkan nama senjata: ")
-    if nama_input.lower() not in [v.lower() for v in data_nama.values()]:
-        data_nama = tambah_data(data_nama, 'nama.txt', nama_input)
+    # Memasukkan nama senjata
+    nama = input("Masukkan nama senjata: ")
 
-    jenis_input = input("Masukkan jenis senjata: ")
-    if jenis_input.lower() not in [v.lower() for v in data_jenis.values()]:
-        data_jenis = tambah_data(data_jenis, 'jenis.txt', jenis_input)
+    # Menambahkan senjata baru dengan format 'Nama Senjata;ID Jenis;ID Warna'
+    new_id = str(len(data_senjata) + 1)
+    data_senjata[new_id] = f"{nama};{jenis_id};{warna_id}"
 
-    warna_input = input("Masukkan warna senjata: ")
-    if warna_input.lower() not in [v.lower() for v in data_warna.values()]:
-        data_warna = tambah_data(data_warna, 'warna.txt', warna_input)
+    # Menyimpan data senjata ke file 'senjata.txt'
+    save_to_file('senjata.txt', data_senjata)
+    
+    # Menampilkan konfirmasi pembuatan senjata
+    print(f"\nAnda membuat senjata: {nama};{jenis_id};{warna_id}")
 
-    # Cari ID untuk nama, jenis, dan warna
-    nama_key = next((k for k, v in data_nama.items() if v.lower() == nama_input.lower()), None)
-    jenis_key = next((k for k, v in data_jenis.items() if v.lower() == jenis_input.lower()), None)
-    warna_key = next((k for k, v in data_warna.items() if v.lower() == warna_input.lower()), None)
+    return data_senjata, data_jenis, data_warna
 
-    # Tambahkan senjata baru ke file senjata.txt
-    with open('senjata.txt', 'a') as file:
-        new_id = len(data_senjata) + 1
-        file.write(f"{new_id}: {nama_input};{jenis_key};{warna_key}\n")
+# Membaca data dari file saat aplikasi dimulai
+data_senjata = read_dictionary_from_file('senjata.txt')
+data_jenis = read_dictionary_from_file('jenis.txt')
+data_warna = read_dictionary_from_file('warna.txt')
 
-    print(f"\nAnda telah membuat senjata:")
-    print(f"Nama: {nama_input}")
-    print(f"Jenis: {jenis_input}")
-    print(f"Warna: {warna_input}")
-
-    return data_nama, data_jenis, data_warna
-
-# Membaca data dari file
-data_senjata = baca_file('senjata.txt')
-data_nama = baca_file('nama.txt')
-data_jenis = baca_file('jenis.txt')
-data_warna = baca_file('warna.txt')
-
+# Menjalankan menu aplikasi
 while True:
     print("\nPilih opsi:")
     print("1. Lihat data senjata")
@@ -124,9 +113,7 @@ while True:
         key = int(input("Masukkan key untuk warna senjata yang akan dihapus: "))
         data_warna = hapus_data(data_warna, 'warna.txt', key)
     elif pilihan == '9':
-        data_nama, data_jenis, data_warna = buat_senjata(data_senjata, data_nama, data_jenis, data_warna)
-        # Update data senjata setelah buat senjata
-        data_senjata = baca_file('senjata.txt')
+        data_senjata, data_jenis, data_warna = buat_senjata(data_senjata, data_jenis, data_warna)
     elif pilihan == '10':
         print("Keluar dari aplikasi.")
         break
