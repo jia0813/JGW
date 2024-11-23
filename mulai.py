@@ -5,6 +5,7 @@ from datetime import datetime
 from tkinter import ttk, simpledialog, messagebox
 from tkcalendar import DateEntry
 import datetime
+import ast
 
 class JGWApp(tk.Tk):
     def __init__(self):
@@ -21,9 +22,10 @@ class JGWApp(tk.Tk):
         self.weapon_colors = []
         self.load_data()
         
-        self.weapon_types = ["1: Pistol", "2: Sniper", "3: Pisau", "4: Basoka", "5: Senapan"]
-        self.weapon_colors = ["1: Hitam", "2: Pink", "3: Putih", "4: Kuning", "5: Hijau"]
+        self.weapon_types = []
+        self.weapon_colors = []
         self.load_weapon_data()
+
         self.selected_weapon_type = ""
         self.selected_weapon_color = ""
         self.weapon_name = ""
@@ -73,11 +75,11 @@ class JGWApp(tk.Tk):
             item_frame.pack(fill='x', padx=10, pady=5)
 
             # "Lihat" button
-            tk.Button(item_frame, text="LIHAT", command=lambda i=item: self.view_weapon(i), bg="#FEAE35", font=self.font_style_medium).pack(side="left", padx=5)
+            tk.Button(item_frame, text="LIHAT", command=lambda i=item: print(i) or self.view_weapon(i), bg="#FEAE35", font=self.font_style_medium).pack(side="left", padx=5)
 
             # Display weapon details
             tk.Label(item_frame, text=item, font=self.font_style_medium, bg="#404B6B", fg="white").pack(side="left", padx=10)
-            tk.Button(item_frame, text="PILIH", command=lambda i=item: self.select_weapon(i), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
+            tk.Button(item_frame, text="PILIH", command=lambda i=item: print(i) or self.select_weapon(i), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
             # "Pilih" and "Hapus" buttons
             tk.Button(item_frame, text="HAPUS", command=lambda i=item: self.delete_weapon(i), bg="#FEAE35", font=self.font_style_medium).pack(side="right", padx=5)
 
@@ -179,8 +181,10 @@ class JGWApp(tk.Tk):
         try:
             # Write updated list back to senjata.txt
             with open("senjata.txt", "w") as file:
-                for item in self.weapon_data_list:
-                    file.write(f"{item}\n")
+                for index,item in enumerate(self.weapon_data_list, start=1):
+                    item_list = item.split(': ')
+                    item_list = ast.literal_eval(item_list[1])
+                    file.write(f"{index} => {item_list[0]};{item_list[1]};{item_list[2]}\n")
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File senjata.txt not found.")
 
@@ -207,9 +211,9 @@ class JGWApp(tk.Tk):
 
     def view_weapon(self, weapon):
         # Extract the weapon ID from the weapon string (e.g., "1: Glok; Pistol; Hitam")
-        weapon_id = weapon.split(":")[0].strip()
+        weapon_id = weapon.split(": ")[0].strip()
         weapon_info = self.weapon_id_map.get(weapon_id, "Unknown Weapon")
-        weapon_name = weapon_info.split(";")[0].strip()  # Get only the weapon name
+        weapon_name = weapon_info[0]  # Get only the weapon name
         # Count occurrences in transaction_history from data.json by matching the weapon ID
         usage_count = sum(1 for transaction in self.transaction_history if transaction["id_senjata"] == weapon_name)
 
@@ -286,7 +290,7 @@ class JGWApp(tk.Tk):
         id_warna = self.weapon_colors.index(self.selected_weapon_color) + 1
 
         # Format data senjata dengan format yang diinginkan
-        weapon_entry = f"{new_id}: {self.weapon_name};{id_jenis};{id_warna}"
+        weapon_entry = f"{new_id}: ['{self.weapon_name}', '{id_jenis}', '{id_warna}']"
 
         # Tambahkan entry ke daftar dan simpan ke file
         self.weapon_data_list.append(weapon_entry)
@@ -416,14 +420,20 @@ class JGWApp(tk.Tk):
             self.weapon_types.append(jenis_baru)
             self.save_jenis_data()  # Save to jenis.txt
             self.page2()  # Refresh page to show the new entry
+
     def save_jenis_data(self):
-        # Save the updated list to jenis.txt
+    # Save the updated list to jenis.txt
         try:
             with open("jenis.txt", "w") as file:
-                for jenis in self.weapon_types:
-                    file.write(f"{jenis}\n")
+                for index, jenis in enumerate(self.weapon_types, start=1):  # Mulai penomoran dari 1
+                    # Pastikan jenis hanya mengambil nama senjata tanpa angka atau tanda tambahan
+                    if ": " in jenis:
+                        jenis = jenis.split(": ", 1)[-1].strip()  # Hapus angka dan ': '
+                    file.write(f"{index} => {jenis}\n")  # Tambahkan angka dengan format konsisten
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File jenis.txt not found.")
+
+
     
 
     def hapus_jenis(self, jenis):
@@ -448,19 +458,22 @@ class JGWApp(tk.Tk):
     def load_warna_data(self):
         # Load weapon colors from warna.txt into a dictionary
         try:
+            self.weapon_colors = []
             with open("warna.txt", "r") as file:
                 for line in file:
-                    id, name = line.strip().split(": ")
+                    id, name = line.strip().split(" => ")
                     self.warna_map[id] = name
+                    self.weapon_colors.append(f'{id}: {name}')
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File warna.txt not found.")
 
     def save_warna_data(self):
-        # Save the updated list to warna.txt
         try:
             with open("warna.txt", "w") as file:
-                for warna in self.weapon_colors:
-                    file.write(f"{warna}\n")
+                for index, warna in enumerate(self.weapon_colors, start=1):  # Mulai penomoran dari 1
+                    if ": " in warna:
+                        warna = warna.split(": ", 1)[-1].strip()  # Hapus angka dan ': '
+                    file.write(f"{index} => {warna}\n")  # Tambahkan angka dengan format konsisten
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File warna.txt not found.")
     
@@ -480,7 +493,10 @@ class JGWApp(tk.Tk):
         try:
             with open("senjata.txt", "r") as file:
                 for line in file:
-                    weapon_id, weapon_info = line.strip().split(": ")
+                    # Pisahkan id senjata dari informasi lainnya
+                    weapon_id, rest = line.strip().split(" => ")
+                    # Pisahkan informasi senjata menjadi bagian-bagian
+                    weapon_info = rest.split(";")
                     self.weapon_id_map[weapon_id] = weapon_info  # Store ID and info mapping
                     self.weapon_data_list.append(f"{weapon_id}: {weapon_info}")  # Store full info for display
         except FileNotFoundError:
@@ -505,10 +521,12 @@ class JGWApp(tk.Tk):
     def load_jenis_data(self):
         # Load weapon types from jenis.txt into a dictionary
         try:
+            self.weapon_types = []
             with open("jenis.txt", "r") as file:
                 for line in file:
-                    id, name = line.strip().split(": ")
+                    id, name = line.strip().split(" => ")
                     self.jenis_map[id] = name
+                    self.weapon_types.append(f'{id}: {name}')
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File jenis.txt not found.")
     def tambah_data_senjata(self):
@@ -562,17 +580,21 @@ class JGWApp(tk.Tk):
         # Save weapon data to senjata.txt
         try:
             with open("senjata.txt", "w") as file:
-                for item in self.weapon_data_list:
-                    file.write(f"{item}\n")
+                for index,item in enumerate(self.weapon_data_list, start=1):
+                    item_list = item.split(': ')
+                    item_list = ast.literal_eval(item_list[1])
+                    file.write(f"{index} => {item_list[0]};{item_list[1]};{item_list[2]}\n")
         except FileNotFoundError:
             tk.messagebox.showerror("Error", "File senjata.txt not found.")
 
     def select_weapon(self, weapon):
         # Extract the weapon details
-        weapon_parts = weapon.split(";")
-        weapon_name = weapon_parts[0].split(": ")[1].strip()  # Remove ID and take name
-        weapon_type = weapon_parts[1].strip()
-        weapon_color = weapon_parts[2].strip()
+        weapon_parts = weapon.split(": ")
+        weapon_list = ast.literal_eval(weapon_parts[1])  # Remove ID and take name
+        # print('wp=',weapon_list)
+        weapon_name = weapon_list[0]
+        weapon_type = weapon_list[1]
+        weapon_color = weapon_list[2]
         self.selected_weapon_color = weapon_color
         self.selected_weapon_type = weapon_name
         
