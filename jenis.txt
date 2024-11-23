@@ -3,4 +3,3 @@
 3 => Pisau
 4 => Basoka
 5 => Senapan
-6 => Tes

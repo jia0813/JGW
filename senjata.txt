@@ -1,6 +1,6 @@
 1 => Glok;1;1
 2 => AWP;2;2
-3 => Karambit;3;3
-4 => Rudal;4;4
+3 => Rudal;4;4
+4 => Karambit;3;3
 5 => Karabin;5;5
-6 => Tes aja;1;1
+6 => Eagle;1;1
