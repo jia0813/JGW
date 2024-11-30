@@ -1,6 +1,6 @@
-1 => Glok;1;1
-2 => AWP;2;2
-3 => Rudal;4;4
-4 => Karambit;3;3
-5 => Karabin;5;5
-6 => revolver;1;1
+1 => Glok;pistol;hitam 
+2 => AWP;sniper;pink
+3 => Karambit;pisau;putih
+4 => rudal;basoka;kuning 
+5 => Karabin;senapan;hijau
+6 => revolver;pistol;biru
