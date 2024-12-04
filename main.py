@@ -58,15 +58,19 @@ def buat_senjata(data_senjata, data_jenis, data_warna):
     # Memasukkan nama senjata
     nama = input("Masukkan nama senjata: ")
 
-    # Menambahkan senjata baru dengan format 'Nama Senjata;ID Jenis;ID Warna'
+    # Mengambil nama jenis senjata dan warna berdasarkan ID
+    jenis = data_jenis[jenis_id] # Mendapatkan nama jenis dari ID
+    warna = data_warna[warna_id] # Mendapatkan nama warna dari ID
+
+    # Menambahkan senjata baru dengan format 'Nama Senjata;Jenis;Warna'
     new_id = str(len(data_senjata) + 1)
-    data_senjata[new_id] = f"{nama};{jenis_id};{warna_id}"
+    data_senjata[new_id] = f"{nama};{jenis};{warna}"
 
     # Menyimpan data senjata ke file 'senjata.txt'
     save_to_file('senjata.txt', data_senjata)
     
     # Menampilkan konfirmasi pembuatan senjata
-    print(f"\nAnda membuat senjata: {nama};{jenis_id};{warna_id}")
+    print(f"\nAnda membuat senjata: {nama};{jenis};{warna}")
 
     return data_senjata, data_jenis, data_warna
 

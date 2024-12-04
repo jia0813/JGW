@@ -1,6 +1,7 @@
-1 => Glok;pistol;hitam 
-2 => AWP;sniper;pink
-3 => Karambit;pisau;putih
-4 => rudal;basoka;kuning 
-5 => Karabin;senapan;hijau
-6 => revolver;pistol;biru
+1 => Glock;Pistol;Hitam
+2 => AWP;Sniper;Pink
+3 => Karambit;Pisau;Putih
+4 => Rudal;Basoka;Kuning
+5 => Karabin;Senapan;Hijau
+6 => Revolver;Pistol;Biru
+7 => Tes aja;Pistol;Pink
