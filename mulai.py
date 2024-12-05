@@ -231,12 +231,18 @@ class JGWApp(tk.Tk):
         # Move the row counter down after the summary
         row_counter += 1
 
-
     def view_weapons_by_type(self, jenis):
         # Filter weapons by type (jenis)
+        filtered_weapons = []
         filtered_weapons = [weapon for weapon in self.weapon_data_list if jenis.split(": ")[1].strip().lower() in weapon]
-        print(jenis.split(": ")[1].strip().lower())
-        print(self.weapon_data_list)
+        #ambil data dari weapon list, terus difilter
+        js = jenis.split(": ")[1]
+        for wp in self.weapon_data_list:
+            js_dalam = wp.split(": ")[1].split(",")[1][2:-1]
+            if js_dalam == js:
+                filtered_weapons.append(wp)
+        #print(jenis.split(": ")[1].strip().lower())
+        #print(self.weapon_data_list)
 
         if filtered_weapons:
             # Create a popup window to display weapon details
