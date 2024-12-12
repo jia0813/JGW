@@ -400,6 +400,8 @@ class JGWApp(tk.Tk):
         weapon_id = weapon.split(": ")[0].strip()
         weapon_info = self.weapon_id_map.get(weapon_id, "Unknown Weapon")
         weapon_name = weapon_info[0]  # Get only the weapon name
+        weapon_type = weapon_info[1] if len(weapon_info) > 1 else "Unknown Type"
+        weapon_color = weapon_info[2] if len(weapon_info) > 2 else "Unknown Type"
         
         # Filter transactions related to this weapon to get ammo and time details
         related_transactions = [t for t in self.transaction_history if t["id_senjata"] == weapon_name]
@@ -422,6 +424,11 @@ class JGWApp(tk.Tk):
         frame = tk.Frame(popup, bg="#404B6B")
         frame.pack(fill="both", expand=True, padx=20, pady=20)
 
+        # Add weapon details at the top
+        tk.Label(frame, text=f"Weapon: {weapon_name}", font=("ThaleahFat", 14), bg="#404B6B", fg="white").grid(pady=10)
+        tk.Label(frame, text=f"Type: {weapon_type}", font=("ThaleahFat", 12), bg="#404B6B", fg="white").grid()
+        tk.Label(frame, text=f"Color: {weapon_color}", font=("ThaleahFat", 12), bg="#404B6B", fg="white").grid(pady=(0,10))
+
         # Column headers for the data table with yellow background
         headers = ["Data Senjata", "Digunakan", "Peluru", "Waktu"]
         for i, header in enumerate(headers):
@@ -429,7 +436,7 @@ class JGWApp(tk.Tk):
 
         # Add data rows for each transaction related to the weapon
         if related_transactions:
-            for index, transaction in enumerate(related_transactions, start=2):  # Starting from row 2
+            for index, transaction in enumerate(related_transactions, start=2):  # Starting from row 5
                 weapon_data = transaction["id_senjata"]
                 ammo = transaction["peluru"]
                 time = transaction["waktu"]
@@ -443,7 +450,7 @@ class JGWApp(tk.Tk):
                 tk.Label(frame, text=ammo, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=2, padx=10, pady=5)
                 tk.Label(frame, text=time, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=3, padx=10, pady=5)
                 # Rekapitulasi Data (Summary) Section
-                summary_row = len(related_transactions) + 2  # Position of the summary row
+                summary_row = len(related_transactions) + 5  # Position of the summary row
 
                 # Add labels for the summary section
                 tk.Label(frame, text="Jumlah", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5)
