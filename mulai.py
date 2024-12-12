@@ -261,8 +261,7 @@ class JGWApp(tk.Tk):
             frame.pack(fill="both", expand=True, padx=20, pady=20)
 
             # Column headers for the data table with yellow background
-            tk.Label(frame, text="Senjata yang menggunakan {jenis}", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5) 
-            headers = ["Digunakan", "Peluru"]
+            headers = ["Data Senjata", "Digunakan", "Peluru"]
             for i, header in enumerate(headers):
                 tk.Label(frame, text=header, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=1, column=i, padx=10, pady=5)
 
