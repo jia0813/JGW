@@ -261,7 +261,7 @@ class JGWApp(tk.Tk):
             frame.pack(fill="both", expand=True, padx=20, pady=20)
 
             # Column headers for the data table with yellow background
-            headers = ["Data Senjata", "Digunakan", "Peluru"]
+            headers = ["Data Senjata", "Jenis", "Warna", "Digunakan", "Peluru"]
             for i, header in enumerate(headers):
                 tk.Label(frame, text=header, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=1, column=i, padx=10, pady=5)
 
@@ -274,6 +274,8 @@ class JGWApp(tk.Tk):
                 #print(ast.literal_eval(weapon.split(": ")[1])[0])
                 weapon_id = ast.literal_eval(weapon.split(": ")[1])[1]  # Assuming weapon ID is stored in 'id_senjata'
                 weapon_name = ast.literal_eval(weapon.split(": ")[1])[0]  # Assuming weapon name is stored in 'name'
+                weapon_type = ast.literal_eval(weapon.split(": ")[1])[2]
+                weapon_color = ast.literal_eval(weapon.split(": ")[1])[3]
 
                 # Filter transactions related to the current weapon
                 related_transactions = [t for t in self.transaction_history if t["id_senjata"] == weapon_name]
@@ -290,6 +292,8 @@ class JGWApp(tk.Tk):
 
                         # Add labels for each piece of data with yellow background and consistent size
                         tk.Label(frame, text=weapon_name, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=0, padx=10, pady=5)
+                        tk.Label(frame, text=weapon_type, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=0, padx=10, pady=5)
+                        tk.Label(frame, text=weapon_color, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=0, padx=10, pady=5)
                         tk.Label(frame, text=str(counter), font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=1, padx=10, pady=5)
                         tk.Label(frame, text=ammo, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=2, padx=10, pady=5)
                         tk.Label(frame, text=time, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=3, padx=10, pady=5)
@@ -299,14 +303,16 @@ class JGWApp(tk.Tk):
                 else:  # If no transactions are found
                     if found_any_data:  # If data has already been found for a previous weapon
                         tk.Label(frame, text="...", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=0, padx=10, pady=5)
-                        tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=1, padx=10, pady=5)
+                        tk.Label(frame, text="N/A", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=0, padx=10, pady=5)
+                        tk.Label(frame, text="N/A", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=0, padx=10, pady=5)
                         tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=2, padx=10, pady=5)
                         tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=3, padx=10, pady=5)
                         row_counter += 1
                     else:
                         # Skip the else block if there is data earlier, this part prevents the "no data" message
                         tk.Label(frame, text="...", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=0, padx=10, pady=5)
-                        tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=1, padx=10, pady=5)
+                        tk.Label(frame, text="N/A", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=0, padx=10, pady=5)
+                        tk.Label(frame, text="N/A", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=0, padx=10, pady=5)
                         tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=2, padx=10, pady=5)
                         tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=row_counter, column=3, padx=10, pady=5)
                         row_counter += 1
