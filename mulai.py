@@ -393,7 +393,7 @@ class JGWApp(tk.Tk):
         weapon_info = self.weapon_id_map.get(weapon_id, "Unknown Weapon")
         weapon_name = weapon_info[0]  # Get only the weapon name
         weapon_type = weapon_info[1] if len(weapon_info) > 1 else "Unknown Type"
-        weapon_color = weapon_info[2] if len(weapon_info) > 2 else "Unknown Type"
+        weapon_color = weapon_info[2] if len(weapon_info) > 2 else "Unknown Color"
         
         # Filter transactions related to this weapon to get ammo and time details
         related_transactions = [t for t in self.transaction_history if t["id_senjata"] == weapon_name]
@@ -408,7 +408,7 @@ class JGWApp(tk.Tk):
         
         # Popup window for displaying the weapon info
         popup = tk.Toplevel(self)
-        popup.geometry("600x500")  # Adjust size to fit all data and summary
+        popup.geometry("600x600")  # Adjust size to fit all data and summary
         popup.configure(bg="#404B6B")  # Set background to match design
         popup.title("Weapon Usage Details")
 
@@ -416,58 +416,49 @@ class JGWApp(tk.Tk):
         frame = tk.Frame(popup, bg="#404B6B")
         frame.pack(fill="both", expand=True, padx=20, pady=20)
 
-        # Add weapon details at the top
-        tk.Label(frame, text=f"Weapon: {weapon_name}", font=("ThaleahFat", 14), bg="#404B6B", fg="white").grid(pady=10)
-        tk.Label(frame, text=f"Type: {weapon_type}", font=("ThaleahFat", 12), bg="#404B6B", fg="white").grid()
-        tk.Label(frame, text=f"Color: {weapon_color}", font=("ThaleahFat", 12), bg="#404B6B", fg="white").grid(pady=(0,10))
+        # Add weapon details at the top in one row
+        tk.Label(frame, text=f"Nama Senjata: {weapon_name}", font=("ThaleahFat", 12), bg="#404B6B", fg="white").grid(row=0, column=0, columnspan=5, pady=(0, 10), padx=10, sticky='ew')
+        tk.Label(frame, text=f"Jenis Senjata: {weapon_type}", font=("ThaleahFat", 12), bg="#404B6B", fg="white").grid(row=1, column=0, columnspan=5, pady=(0, 10), padx=10, sticky='ew')
+        tk.Label(frame, text=f"Warna Senjata: {weapon_color}", font=("ThaleahFat", 12), bg="#404B6B", fg="white").grid(row=2, column=0, columnspan=5, pady=(0, 10), padx=10, sticky='ew')
 
         # Column headers for the data table with yellow background
-        headers = ["Data Senjata", "Digunakan", "Peluru", "Waktu"]
+        headers = ["Digunakan", "Peluru", "Waktu"]
         for i, header in enumerate(headers):
-            tk.Label(frame, text=header, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=1, column=i, padx=10, pady=5)
+            tk.Label(frame, text=header, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=3, column=i, padx=10, pady=5)
 
         # Add data rows for each transaction related to the weapon
         if related_transactions:
-            for index, transaction in enumerate(related_transactions, start=2):  # Starting from row 5
-                weapon_data = transaction["id_senjata"]
+            for index, transaction in enumerate(related_transactions, start=4):  # Starting from row 4
                 ammo = transaction["peluru"]
                 time = transaction["waktu"]
 
                 # Display the counter in the "Digunakan" column
-                counter = index - 1  # This will start from 1, 2, 3, etc.
+                counter = index - 3  # This will start from 1, 2, 3, etc.
                 
                 # Add labels for each piece of data with yellow background and consistent size
-                tk.Label(frame, text=weapon_data, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=0, padx=10, pady=5)
-                tk.Label(frame, text=str(counter), font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=1, padx=10, pady=5)  # Display the counter here
-                tk.Label(frame, text=ammo, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=2, padx=10, pady=5)
-                tk.Label(frame, text=time, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=3, padx=10, pady=5)
-                # Rekapitulasi Data (Summary) Section
-                summary_row = len(related_transactions) + 5  # Position of the summary row
+                tk.Label(frame, text=str(counter), font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=0, padx=10, pady=5)  # Display the counter here
+                tk.Label(frame, text=ammo, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=1, padx=10, pady=5)
+                tk.Label(frame, text=time, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=index, column=2, padx=10, pady=5)
 
-                # Add labels for the summary section
-                tk.Label(frame, text="Jumlah", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5)
-                tk.Label(frame, text=f"{total_usage}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=1, padx=10, pady=5)
-                tk.Label(frame, text=f"{total_ammo}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=2, padx=10, pady=5)
-        else:
-            # If no data found, display the weapon name with 0s
-            tk.Label(frame, text=weapon_name, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=2, column=0, padx=10, pady=5)
-            tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=2, column=1, padx=10, pady=5)
-            tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=2, column=2, padx=10, pady=5)
-            tk.Label(frame, text="-", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=2, column=3, padx=10, pady=5)
-            summary_row = 3  # Position of the summary row
+            # Rekapitulasi Data (Summary) Section
+            summary_row = len(related_transactions) + 4  # Adjust to ensure the summary appears after the data rows
 
             # Add labels for the summary section
             tk.Label(frame, text="Jumlah", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5)
             tk.Label(frame, text=f"{total_usage}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=1, padx=10, pady=5)
             tk.Label(frame, text=f"{total_ammo}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=2, padx=10, pady=5)
+        else:
+            # If no data found, display the weapon name with 0s
+            tk.Label(frame, text=weapon_name, font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=4, column=0, padx=10, pady=5)
+            tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=4, column=1, padx=10, pady=5)
+            tk.Label(frame, text="0", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=4, column=2, padx=10, pady=5)
+            tk.Label(frame, text="-", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=4, column=3, padx=10, pady=5)
+            summary_row = 5  # Position of the summary row
 
-        
-
-        # OK button to close the popup with yellow background
-        tk.Button(frame, text="OK", command=popup.destroy, bg="#FEAE35", font=self.font_style_medium, width=15).grid(row=summary_row + 1, column=0, columnspan=4, pady=20)
-
-
-
+            # Add labels for the summary section
+            tk.Label(frame, text="Jumlah", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5)
+            tk.Label(frame, text=f"{total_usage}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=1, padx=10, pady=5)
+            tk.Label(frame, text=f"{total_ammo}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=2, padx=10, pady=5)
 
     def create_weapon_tab(self, frame):
         tk.Label(frame, text="Nama Senjata:", font=self.font_style_medium, bg="#404B6B", fg="white").pack(pady=10)
