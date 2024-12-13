@@ -5,3 +5,4 @@
 5 => Karabin;Senapan;Hijau
 6 => Revolver;Pistol;Biru
 7 => Tes aja;Pistol;Pink
+8 => tr;Pisau;Pink
