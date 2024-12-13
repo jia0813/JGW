@@ -529,16 +529,17 @@ class JGWApp(tk.Tk):
         # Store the selected weapon color and save the weapon data
         self.selected_weapon_color = warna.split(": ", 1)[-1]  # Extract the color name
         self.save_new_weapon_data()
+
     def save_new_weapon_data(self):
         # Dapatkan nomor urut terbaru
-        new_id = len(self.weapon_data_list) + 1
+        new_id = len(self.weapon_data_list)
 
         # Dapatkan ID jenis dan warna dari weapon_type dan weapon_color
-        id_jenis = self.weapon_types.index(self.selected_weapon_type) + 1
-        id_warna = self.weapon_colors.index(self.selected_weapon_color) + 1
+        jenis = self.weapon_types.index(self.selected_weapon_type) 
+        warna = self.weapon_colors.index(self.selected_weapon_color) 
 
         # Format data senjata dengan format yang diinginkan
-        weapon_entry = f"{new_id}: ['{self.weapon_name}', '{id_jenis}', '{id_warna}']"
+        weapon_entry = f"{new_id}: ['{self.weapon_name}', '{jenis}', '{warna}']"
 
         # Tambahkan entry ke daftar dan simpan ke file
         self.weapon_data_list.append(weapon_entry)
