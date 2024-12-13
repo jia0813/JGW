@@ -263,10 +263,13 @@ class JGWApp(tk.Tk):
 
         # Filter weapon_data_list untuk mencocokkan jenis
         for wp in self.weapon_data_list:
-            # Ambil jenis dari data weapon
-            js_dalam = wp.split(": ")[1].split(",")[1][2:-1].strip().lower()
+            weapon_data = wp.split(": ")[1].split(",")
+            js_dalam = weapon_data[1][2:-1].strip().lower()
             if js_dalam == js:
-                filtered_weapons.append(wp)
+                filtered_weapons.append({
+                    "nama_senjata": weapon_data[0][2:-1].strip(),
+                    "jenis_senjata": js_dalam
+                })
 
         if filtered_weapons:  # Jika ditemukan senjata yang cocok dengan jenis
             # Buat popup window
@@ -290,42 +293,39 @@ class JGWApp(tk.Tk):
                 tk.Label(frame, text=header, font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
                         width=20, height=1, anchor='center'
                         ).grid(row=1, column=col, padx=10, pady=5)
-            
-            total_used = 0
-            total_ammo = 0
+
+            total_usage_all_weapons = 0
+            total_ammo_all_weapons = 0
+            row_counter = 2  # Start displaying weapons from row 2 onwards
 
             # Tampilkan data senjata
-            for i, weapon in enumerate(filtered_weapons, start=2):
-                weapon_data = wp.split(": ")[1].split(",")
-                weapon_name = weapon_data[0][2:-1]  # Ambil nama senjata
+            for weapon in filtered_weapons:
+                weapon_name = weapon["nama_senjata"]
 
-                # Ambil data transaksi 
+                # Ambil data transaksi terkait senjata
                 related_transactions = [t for t in self.transaction_history if t["id_senjata"] == weapon_name]
-                used_count = len(related_transactions)
-                ammo_count = sum(int(t["Peluru"]) for t in related_transactions)
 
-                total_used += used_count
-                total_ammo += ammo_count
+                if related_transactions:
+                    for transaction in related_transactions:
+                        ammo = transaction["peluru"]
+                        # Tampilkan data per transaksi
+                        tk.Label(frame, text=weapon_name, font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
+                                width=20, height=1, anchor='center').grid(row=row_counter, column=0, padx=10, pady=5)
+                        tk.Label(frame, text="1x", font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
+                                width=20, height=1, anchor='center').grid(row=row_counter, column=1, padx=10, pady=5)
+                        tk.Label(frame, text=ammo, font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
+                                width=20, height=1, anchor='center').grid(row=row_counter, column=2, padx=10, pady=5)
+                        row_counter += 1
 
-                # Display nama dan jenis senjata
-                tk.Label(frame, text=weapon_name, font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
-                        width=20, height=1, anchor='center'
-                        ).grid(row=i, column=0, padx=10, pady=5)
-                tk.Label(frame, text=f"{used_count}x", font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
-                        width=20, height=1, anchor='center'
-                        ).grid(row=i, column=1, padx=10, pady=5)
-                tk.Label(frame, text=f"{ammo_count}", font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
-                        width=20, height=1, anchor='center'
-                        ).grid(row=i, column=1, padx=10, pady=5)
-            
-            # Add the summary for each weapon after all transactions
-            summary_row = len(filtered_weapons) + 2
-            tk.Label(frame, text="Jumlah", font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
-                 width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5)
-            tk.Label(frame, text=f"{total_used}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
-                 width=20, height=1, anchor='center').grid(row=summary_row, column=1, padx=10, pady=5)
-            tk.Label(frame, text=f"{total_ammo} peluru", font=("ThaleahFat", 12), bg="#FEAE35", fg="black",
-                 width=20, height=1, anchor='center').grid(row=summary_row, column=2, padx=10, pady=5)
+                    # Update total penggunaan dan peluru
+                    total_usage_all_weapons += len(related_transactions)
+                    total_ammo_all_weapons += sum(int(t["peluru"]) for t in related_transactions)
+                
+            # Displaying summary at the end
+            summary_row = row_counter
+            tk.Label(frame, text="Jumlah", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5)
+            tk.Label(frame, text=f"{total_usage_all_weapons}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=1, padx=10, pady=5)
+            tk.Label(frame, text=f"{total_ammo_all_weapons} peluru", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=2, padx=10, pady=5)
 
         else:
             # Jika tidak ditemukan senjata yang cocok
