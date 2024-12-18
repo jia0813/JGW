@@ -1,11 +1,17 @@
 import tkinter as tk
-from tkinter import ttk, simpledialog
+from tkinter import ttk, simpledialog, filedialog
 import json
 from datetime import datetime
 from tkinter import ttk, simpledialog, messagebox
 from tkcalendar import DateEntry
 import datetime
 import ast
+import shutil
+from PIL import ImageTk, Image
+import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 
 class JGWApp(tk.Tk):
     def __init__(self):
@@ -43,6 +49,45 @@ class JGWApp(tk.Tk):
         button = tk.Button(self, text="Mulai", command=self.page2, bg="#FEAE35", font=self.font_style_large)
         button.pack()
 
+    def display_pistol_data(self):
+        # Create a new frame for the pistol data
+        pistol_frame = tk.Frame(self, bg="#404B6B")
+        pistol_frame.pack(fill='both', expand=True, padx=20, pady=20)
+
+        # Read data from transactions.txt
+        data = []
+        with open('transactions.txt', 'r') as file:
+            for line in file:
+                parts = line.strip().split(',')
+                data.append((int(parts[0]), int(parts[1]), int(parts[2]), parts[3]))
+
+        # Convert data to DataFrame
+        df = pd.DataFrame(data, columns=["Jenis Senjata", "Jumlah Peluru", "Kolom 3", "Waktu"])
+
+        # Filter for pistols
+        df_pistol = df[df["Jenis Senjata"] == "Pistol"]
+
+        # Calculate total bullets per pistol
+        total_peluru = df_pistol.groupby("Jenis Senjata")["Jumlah Peluru"].sum().reset_index()
+
+        # Create a bar chart
+        plt.figure(figsize=(12, 7))
+        plt.bar(total_peluru["Jenis Senjata"], total_peluru["Jumlah Peluru"], color='orange', edgecolor='black')
+        plt.xlabel("Jenis Senjata", fontsize=14)
+        plt.ylabel("Total Jumlah Peluru", fontsize=14)
+        plt.title("Total Jumlah Peluru per Jenis Senjata", fontsize=16)
+        plt.xticks(total_peluru["Jenis Senjata"], fontsize=12)
+        plt.grid(axis='y', linestyle='--', alpha=0.7)
+
+        # Add annotations on the bars
+        for index, value in enumerate(total_peluru["Jumlah Peluru"]):
+            plt.text(index, value + 0.5, str(value), ha='center', fontsize=12)
+
+        # Embed the plot in the Tkinter frame
+        canvas = FigureCanvasTkAgg(plt.gcf(), master=pistol_frame)
+        canvas.draw()
+        canvas.get_tk_widget().pack(fill='both', expand=True)
+
     def page2(self):
         for widget in self.winfo_children():
             widget.destroy()
@@ -50,7 +95,7 @@ class JGWApp(tk.Tk):
         # Create "Keluar" button at the top-right corner of the main window
         keluar_button = tk.Button(self, text="KELUAR", command=self.quit_app, bg="#FEAE35", font=self.font_style_medium)
         keluar_button.place(x=1170, y=10)  # Adjust the x and y position as needed based on window size
-
+    
         # Notebook for tabs
         notebook = ttk.Notebook(self)
         notebook.pack(fill='both', expand=True, padx=20, pady=50)  # Adjust the padding to leave space for "Keluar" button
@@ -86,6 +131,10 @@ class JGWApp(tk.Tk):
 
         # "Tambah Data Senjata" button
         tk.Button(frame1, text="TAMBAH DATA SENJATA", command=self.tambah_data_senjata, bg="#FEAE35", font=self.font_style_medium).pack(pady=20)
+        control_frame = tk.Frame(frame1, bg="#404B6B")
+        control_frame.pack(pady=20)
+
+        tk.Button(frame1, text="Grafik", command=self.display_pistol_data(), bg="#FEAE35", font=self.font_style_medium).pack(pady=20)
         control_frame = tk.Frame(frame1, bg="#404B6B")
         control_frame.pack(pady=20)
 
@@ -374,7 +423,7 @@ class JGWApp(tk.Tk):
 
         # Refresh the page to show updated list
         self.page2()
-    def display_selected_weapon(self, weapon_name, weapon_type, weapon_color):
+    def display_selected_weapon(self,weapon_id, weapon_name, weapon_type, weapon_color):
         # Look up the names for the type and color based on their IDs
         # weapon_type_name = self.jenis_map.get(weapon_type_id, "Unknown Type")
         # weapon_color_name = self.warna_map.get(weapon_color_id, "Unknown Color")
@@ -389,6 +438,22 @@ class JGWApp(tk.Tk):
         tk.Label(self, text=f"JENIS: {weapon_type}", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=5)
         tk.Label(self, text=f"WARNA: {weapon_color}", font=self.font_style_large, bg="#404B6B", fg="white").pack(pady=5)
 
+        display = tk.Label(self)
+        display.pack(pady=10)
+        # Image processing
+        try:
+            img = Image.open(f"./simpan/{weapon_id}.jpeg")
+            img.thumbnail((200,200))
+            img2 = ImageTk.PhotoImage(img)
+            display.config(image=img2)
+            display.image = img2
+        except:
+            img = Image.open(f"./simpan/default.jpeg")
+            img.thumbnail((200,200))
+            img2 = ImageTk.PhotoImage(img)
+            display.config(image=img2)
+            display.image = img2
+
         # Buttons for next actions
         tk.Button(self, text="MULAI LATIHAN", command=self.page6, bg="#FEAE35", font=self.font_style_large).pack(pady=10)
         tk.Button(self, text="KEMBALI", command=self.page2, bg="#FEAE35", font=self.font_style_large).pack(pady=5)
@@ -396,10 +461,8 @@ class JGWApp(tk.Tk):
     def view_weapon(self, weapon):
         # Extract the weapon ID from the weapon string (e.g., "1: Glok; Pistol; Hitam")
         weapon_id = weapon.split(": ")[0].strip()
-        weapon_info = self.weapon_id_map.get(weapon_id, "Unknown Weapon")
-        weapon_name = weapon_info[0]  # Get only the weapon name
-        weapon_type = weapon_info[1] if len(weapon_info) > 1 else "Unknown Type"
-        weapon_color = weapon_info[2] if len(weapon_info) > 2 else "Unknown Color"
+        weapon_info = self.weapon_id_map.get(weapon_id, ("Unknown Weapon", "Unknown Type", "Unknown Color"))
+        weapon_name, weapon_type, weapon_color = weapon_info
         
         # Filter transactions related to this weapon to get ammo and time details
         related_transactions = [t for t in self.transaction_history if t["id_senjata"] == weapon_name]
@@ -414,7 +477,7 @@ class JGWApp(tk.Tk):
         
         # Popup window for displaying the weapon info
         popup = tk.Toplevel(self)
-        popup.geometry("600x600")  # Adjust size to fit all data and summary
+        popup.geometry("800x600")  # Adjust size to fit all data and summary
         popup.configure(bg="#404B6B")  # Set background to match design
         popup.title("Weapon Usage Details")
 
@@ -465,6 +528,20 @@ class JGWApp(tk.Tk):
             tk.Label(frame, text="Jumlah", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=0, padx=10, pady=5)
             tk.Label(frame, text=f"{total_usage}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=1, padx=10, pady=5)
             tk.Label(frame, text=f"{total_ammo}x digunakan", font=("ThaleahFat", 12), bg="#FEAE35", fg="black", width=20, height=1, anchor='center').grid(row=summary_row, column=2, padx=10, pady=5)
+        
+        # Pass the weapon ID to the upload_image method using a lambda function
+        tk.Button(frame, text="Upload Gambar", bg="#FEAE35", font=self.font_style_medium, command=lambda: self.upload_image(weapon_id)).grid(row=summary_row, column=3, padx=10, pady=10)
+
+    def upload_image(self, weapon_id):
+        "Open an image and save it with the weapon ID"
+        try:   
+            file_path = filedialog.askopenfilename(initialdir="", filetypes=[("Image files", "*.jpg *.jpeg *.png *.gif *.bmp")])
+            if file_path:
+                self.selected_image_path = file_path
+                shutil.copy2(file_path, f"./simpan/{weapon_id}.jpeg")
+                return file_path
+        except FileNotFoundError:
+            messagebox.showerror("Unfound file", "The selected file was not found.")
 
     def create_weapon_tab(self, frame):
         tk.Label(frame, text="Nama Senjata:", font=self.font_style_medium, bg="#404B6B", fg="white").pack(pady=10)
@@ -829,8 +906,8 @@ class JGWApp(tk.Tk):
     def select_weapon(self, weapon):
         # Extract the weapon details
         weapon_parts = weapon.split(": ")
+        weapon_id = weapon_parts[0]  # Extract weapon ID
         weapon_list = ast.literal_eval(weapon_parts[1])  # Remove ID and take name
-        # print('wp=',weapon_list)
         weapon_name = weapon_list[0]
         weapon_type = weapon_list[1]
         weapon_color = weapon_list[2]
@@ -839,7 +916,7 @@ class JGWApp(tk.Tk):
         
         
         # Show the selected weapon details on a new page
-        self.display_selected_weapon(weapon_name, weapon_type, weapon_color)
+        self.display_selected_weapon(weapon_id,weapon_name, weapon_type, weapon_color)
         # Tambahkan fungsi popup untuk tombol "SORTIR"
 
     def sort_transactions(self):
