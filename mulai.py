@@ -1036,7 +1036,6 @@ class JGWApp(tk.Tk):
         tk.Button(self.sort_popup, text="3 LATIHAN TERAKHIR", command=lambda: apply_sorting("last_three"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
         tk.Button(self.sort_popup, text="SENJATA YANG PALING BANYAK DIGUNAKAN", command=lambda: apply_sorting("most_used"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
         tk.Button(self.sort_popup, text="SENJATA YANG PALING SEDIKIT DIGUNAKAN", command=lambda: apply_sorting("least_used"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
-        tk.Button(self.sort_popup, text="SENJATA YANG TIDAK PERNAH DIGUNAKAN", command=lambda: apply_sorting("never_used"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
         tk.Button(self.sort_popup, text="TAMPILKAN SEMUA SEJARAH", command=lambda: apply_sorting("all_history"), bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
         tk.Button(self.sort_popup, text="BERDASARKAN TANGGAL", command=sort_by_date, bg="#FEAE35", font=self.font_style_medium).pack(pady=5)
 
