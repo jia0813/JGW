@@ -1,0 +1,52 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import tkinter as tk
+from tkinter import messagebox
+
+def show_graph():
+    # Membaca data dari file transactions.txt
+    data = []
+    try:
+        with open('transactions.txt', 'r') as file:
+            for line in file:
+                # Menghapus karakter newline dan memisahkan berdasarkan koma
+                parts = line.strip().split(',')
+                # Mengonversi bagian yang relevan ke dalam tuple
+                data.append((int(parts[0]), int(parts[1]), int(parts[2]), parts[3]))
+
+        # Mengubah data menjadi DataFrame
+        df = pd.DataFrame(data, columns=["Jenis Senjata", "Jumlah Peluru", "Kolom 3", "Waktu"])
+
+        # Menghitung total jumlah peluru per jenis senjata
+        total_peluru = df.groupby("Jenis Senjata")["Jumlah Peluru"].sum().reset_index()
+
+        # Membuat grafik batang
+        plt.figure(figsize=(12, 7))  # Mengubah ukuran grafik
+        plt.bar(total_peluru["Jenis Senjata"], total_peluru["Jumlah Peluru"], color='orange', edgecolor='black')  # Mengubah warna dan menambahkan tepi
+        plt.xlabel("Jenis Senjata", fontsize=14)  # Mengubah ukuran font label sumbu X
+        plt.ylabel("Total Jumlah Peluru", fontsize=14)  # Mengubah ukuran font label sumbu Y
+        plt.title("Total Jumlah Peluru per Jenis Senjata", fontsize=16)  # Mengubah ukuran font judul
+        plt.xticks(total_peluru["Jenis Senjata"], fontsize=12)  # Mengubah ukuran font label sumbu X
+        plt.grid(axis='y', linestyle='--', alpha=0.7)  # Mengubah gaya grid
+
+        # Menambahkan anotasi pada batang
+        for index, value in enumerate(total_peluru["Jumlah Peluru"]):
+            plt.text(index + 1, value + 0.5, str(value), ha='center', fontsize=12)
+
+        # Menampilkan grafik
+        plt.show()
+    except FileNotFoundError:
+        messagebox.showerror("Error", "File transactions.txt tidak ditemukan.")
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+# Membuat jendela utama
+root = tk.Tk()
+root.title("Grafik Senjata")
+
+# Membuat tombol untuk menampilkan grafik
+button = tk.Button(root, text="Tampilkan Grafik", command=show_graph, padx=20, pady=10)
+button.pack(pady=20)
+
+# Menjalankan aplikasi
+root.mainloop()
